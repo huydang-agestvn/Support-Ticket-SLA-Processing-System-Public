@@ -1,12 +1,14 @@
-package importsample
+package main
 
 import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"support-ticket.com/internal/worker"
 )
 
-func generateMockEvents() []Event {
+func generateMockEvents() []worker.Event {
 	rand.Seed(time.Now().UnixNano())
 
 	statuses := []string{
@@ -15,10 +17,10 @@ func generateMockEvents() []Event {
 		"duplicate",
 	}
 
-	events := make([]Event, 100)
+	events := make([]worker.Event, 1000)
 
-	for i := 0; i < 100; i++ {
-		events[i] = Event{
+	for i := 0; i < 1000; i++ {
+		events[i] = worker.Event{
 			ID:     i + 1,
 			Status: statuses[rand.Intn(len(statuses))],
 		}
@@ -28,9 +30,14 @@ func generateMockEvents() []Event {
 }
 
 func main() {
+	start := time.Now()
+	defer func() {
+		fmt.Println()
+		fmt.Printf("Total time: %v\n", time.Since(start))
+	}()
 	events := generateMockEvents()
 
-	result := StartTicketPool(events, 5)
+	result := worker.StartTicketPool(events, 5)
 
 	fmt.Printf(
 		`{"accepted_count": %d, "rejected_count": %d, "duplicate_count": %d}`,
@@ -38,4 +45,5 @@ func main() {
 		result.Rejected,
 		result.Duplicate,
 	)
+
 }
