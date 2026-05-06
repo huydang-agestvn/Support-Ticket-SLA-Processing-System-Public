@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"fmt"
+	"strings"
+	"time"
+)
 
 type TicketStatus string
 type Priority string
@@ -21,7 +26,7 @@ const (
 )
 
 type Ticket struct {
-	ID          int          `json:"id"`
+	ID          string       `json:"id"`
 	AssigneeID  string       `json:"assignee_id"`
 	RequestorID string       `json:"requestor_id"`
 	Title       string       `json:"title"`
@@ -34,4 +39,91 @@ type Ticket struct {
 	ResolvedAt  time.Time    `json:"resolved_at"`
 	SLADueAt    time.Time    `json:"sla_due_at"`
 	CancelledAt time.Time    `json:"cancelled_at"`
+}
+
+var (
+	ErrValidation        = errors.New("ticket validation failed")
+	ErrInvalidTransition = errors.New("invalid status transition")
+)
+
+func (p Priority) IsValid() bool {
+	switch p {
+	case PriorityLow, PriorityMedium, PriorityHigh:
+		return true
+	}
+	return false
+}
+
+func (s TicketStatus) IsValid() bool {
+	switch s {
+	case StatusNew, StatusAssigned, StatusInProgress, StatusResolved, StatusClosed, StatusCancelled:
+		return true
+	}
+	return false
+}
+
+var ticketTransitions = map[TicketStatus]map[TicketStatus]bool{
+	StatusNew: {
+		StatusAssigned:  true,
+		StatusCancelled: true,
+	},
+	StatusAssigned: {
+		StatusInProgress: true,
+		StatusCancelled:  true,
+	},
+	StatusInProgress: {
+		StatusResolved: true,
+	},
+	StatusResolved: {
+		StatusClosed: true,
+	},
+}
+
+func (s TicketStatus) CanTransitionTo(next TicketStatus) bool {
+	allowed, ok := ticketTransitions[s]
+	if !ok {
+		return false
+	}
+	return allowed[next]
+}
+
+func (t *Ticket) Validate() error {
+	if strings.TrimSpace(t.Title) == "" {
+		return fmt.Errorf("%w: Title is required", ErrValidation)
+	}
+	if strings.TrimSpace(t.Description) == "" {
+		return fmt.Errorf("%w: Description is required", ErrValidation)
+	}
+	if strings.TrimSpace(t.RequestorID) == "" {
+		return fmt.Errorf("%w: Requestor ID is required", ErrValidation)
+	}
+	if !t.Priority.IsValid() {
+		return fmt.Errorf("%w: Unknown priority '%s'", ErrValidation, t.Priority)
+	}
+	if !t.Status.IsValid() {
+		return fmt.Errorf("%w: Unknown status '%s'", ErrValidation, t.Status)
+	}
+
+	return nil
+}
+
+func (t *Ticket) UpdateStatus(newStatus TicketStatus, timestamp time.Time) error {
+	if t.Status == newStatus {
+		return nil
+	}
+	if !newStatus.IsValid() {
+		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, ErrInvalidTransition)
+	}
+	if !t.Status.CanTransitionTo(newStatus) {
+		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, ErrInvalidTransition)
+	}
+	t.Status = newStatus
+	t.UpdatedAt = timestamp
+	switch newStatus {
+	case StatusResolved:
+		t.ResolvedAt = timestamp
+	case StatusCancelled:
+		t.CancelledAt = timestamp
+	}
+	return nil
 }
