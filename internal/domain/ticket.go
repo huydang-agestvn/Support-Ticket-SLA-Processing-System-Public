@@ -103,7 +103,23 @@ func (t *Ticket) Validate() error {
 	if !t.Status.IsValid() {
 		return fmt.Errorf("%w: Unknown status '%s'", ErrValidation, t.Status)
 	}
-
+	if t.CreatedAt.IsZero() {
+		return fmt.Errorf("%w: Created At is required", ErrValidation)
+	}
+	if t.Deadline.IsZero() {
+		return fmt.Errorf("%w: Deadline is required for SLA tracking", ErrValidation)
+	}
+	if t.Deadline.Before(t.CreatedAt) {
+		return fmt.Errorf("%w: Deadline cannot be before creation time", ErrValidation)
+	}
+	if t.Status == StatusResolved {
+		if t.ResolvedAt.IsZero() {
+			return fmt.Errorf("%w: Resolved At is required when status is resolved", ErrValidation)
+		}
+		if t.ResolvedAt.Before(t.CreatedAt) {
+			return fmt.Errorf("%w: Resolved At cannot be before Created At", ErrValidation)
+		}
+	}
 	return nil
 }
 

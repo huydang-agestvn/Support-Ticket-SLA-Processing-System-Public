@@ -21,19 +21,19 @@ type TicketReport struct {
 
 func (r *TicketReport) Validate() error {
 	if r.ReportDate.IsZero() {
-		return fmt.Errorf("%w: report date is required", ErrValidation)
+		return fmt.Errorf("%w: Report date is required", ErrValidation)
 	}
 	if r.NewCount < 0 || r.ResolvedCount < 0 || r.CancelledCount < 0 {
-		return fmt.Errorf("%w: status counts cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Status counts cannot be negative", ErrValidation)
 	}
 	if r.OverdueCount < 0 {
-		return fmt.Errorf("%w: overdue count cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Overdue count cannot be negative", ErrValidation)
 	}
 	if r.AvgResolutionTime < 0 {
-		return fmt.Errorf("%w: average resolution time cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Average resolution time cannot be negative", ErrValidation)
 	}
 	if r.HighPriorityCount < 0 || r.MediumPriorityCount < 0 || r.LowPriorityCount < 0 {
-		return fmt.Errorf("%w: priority counts cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Priority counts cannot be negative", ErrValidation)
 	}
 	return nil
 }

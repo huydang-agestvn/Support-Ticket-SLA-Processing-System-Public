@@ -34,5 +34,8 @@ func (e *TicketEvent) Validate() error {
 	if e.FromStatus != e.ToStatus && !e.FromStatus.CanTransitionTo(e.ToStatus) {
 		return fmt.Errorf("%w: Illegal event transition intent from '%s' to '%s'", ErrInvalidTransition, e.FromStatus, e.ToStatus)
 	}
+	if e.CreatedAt.IsZero() {
+		return fmt.Errorf("%w: Event created_at is required", ErrValidation)
+	}
 	return nil
 }
