@@ -1,0 +1,3458 @@
+[
+  {
+    "ticket_id": 1,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-002",
+    "created_at": "2026-05-05T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 1,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-05T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 2,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-003",
+    "created_at": "2026-05-04T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 2,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-04T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 2,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-04T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 3,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-004",
+    "created_at": "2026-05-03T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 3,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-03T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 3,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-03T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 3,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-03T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 4,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-005",
+    "created_at": "2026-05-02T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 4,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-02T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 4,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-02T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 4,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-02T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 4,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-005",
+    "created_at": "2026-05-02T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 5,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-006",
+    "created_at": "2026-05-01T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 5,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-006",
+    "created_at": "2026-05-01T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 6,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-007",
+    "created_at": "2026-04-30T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 7,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-008",
+    "created_at": "2026-04-29T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 7,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-29T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 8,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-009",
+    "created_at": "2026-04-28T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 8,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-28T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 8,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-28T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 9,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-010",
+    "created_at": "2026-04-27T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 9,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 9,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 9,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 10,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-011",
+    "created_at": "2026-04-26T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 10,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 10,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 10,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 10,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-011",
+    "created_at": "2026-04-26T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 11,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-012",
+    "created_at": "2026-04-25T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 11,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-012",
+    "created_at": "2026-04-25T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 12,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-013",
+    "created_at": "2026-04-24T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 13,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-014",
+    "created_at": "2026-04-23T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 13,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 14,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-015",
+    "created_at": "2026-04-22T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 14,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-22T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 14,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-22T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 15,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-016",
+    "created_at": "2026-04-21T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 15,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 15,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 15,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 16,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-017",
+    "created_at": "2026-04-20T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 16,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 16,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 16,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 16,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-017",
+    "created_at": "2026-04-20T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 17,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-018",
+    "created_at": "2026-04-18T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 17,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-018",
+    "created_at": "2026-04-19T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 18,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-019",
+    "created_at": "2026-04-17T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 19,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-020",
+    "created_at": "2026-04-16T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 19,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-16T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 20,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-021",
+    "created_at": "2026-04-15T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 20,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-15T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 20,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-15T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 21,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-022",
+    "created_at": "2026-04-14T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 21,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-14T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 21,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-14T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 21,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-15T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 22,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-023",
+    "created_at": "2026-04-13T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 22,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-13T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 22,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-13T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 22,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-14T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 22,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-023",
+    "created_at": "2026-04-14T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 23,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-024",
+    "created_at": "2026-04-12T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 23,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-024",
+    "created_at": "2026-04-13T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 24,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-025",
+    "created_at": "2026-04-12T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 25,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-026",
+    "created_at": "2026-04-11T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 25,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-11T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 26,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-027",
+    "created_at": "2026-04-10T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 26,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-10T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 26,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-10T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 27,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-028",
+    "created_at": "2026-04-09T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 27,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-09T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 27,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-09T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 27,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-10T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 28,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-029",
+    "created_at": "2026-04-08T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 28,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-08T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 28,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-08T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 28,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-09T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 28,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-029",
+    "created_at": "2026-04-09T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 29,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-030",
+    "created_at": "2026-04-07T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 29,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-030",
+    "created_at": "2026-04-07T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 30,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-031",
+    "created_at": "2026-04-06T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 31,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-032",
+    "created_at": "2026-04-05T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 31,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-05T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 32,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-033",
+    "created_at": "2026-04-04T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 32,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-04T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 32,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-04T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 33,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-034",
+    "created_at": "2026-04-03T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 33,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-03T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 33,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-03T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 33,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-04T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 34,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-035",
+    "created_at": "2026-04-02T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 34,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-02T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 34,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-02T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 34,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-03T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 34,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-035",
+    "created_at": "2026-04-03T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 35,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-036",
+    "created_at": "2026-04-01T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 35,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-036",
+    "created_at": "2026-04-01T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 36,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-037",
+    "created_at": "2026-03-31T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 37,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-038",
+    "created_at": "2026-03-30T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 37,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-03-30T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 38,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-039",
+    "created_at": "2026-03-29T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 38,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-009",
+    "created_at": "2026-03-29T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 38,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-009",
+    "created_at": "2026-03-29T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 39,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-040",
+    "created_at": "2026-03-28T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 39,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-28T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 39,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-28T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 39,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-29T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 40,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-041",
+    "created_at": "2026-03-27T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 40,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-27T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 40,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-27T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 40,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-28T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 40,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-041",
+    "created_at": "2026-03-28T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 41,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-042",
+    "created_at": "2026-03-25T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 41,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-042",
+    "created_at": "2026-03-26T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 42,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-043",
+    "created_at": "2026-03-24T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 43,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-044",
+    "created_at": "2026-03-23T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 43,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-03-23T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 44,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-045",
+    "created_at": "2026-03-22T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 44,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-015",
+    "created_at": "2026-03-22T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 44,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-015",
+    "created_at": "2026-03-22T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 45,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-046",
+    "created_at": "2026-05-05T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 45,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-05T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 45,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-05T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 45,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-07T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 46,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-047",
+    "created_at": "2026-05-04T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 46,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-04T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 46,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-04T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 46,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-06T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 46,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-047",
+    "created_at": "2026-05-06T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 47,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-048",
+    "created_at": "2026-05-03T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 47,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-048",
+    "created_at": "2026-05-04T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 48,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-049",
+    "created_at": "2026-05-03T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 49,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-050",
+    "created_at": "2026-05-02T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 49,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-02T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 50,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-051",
+    "created_at": "2026-05-01T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 50,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-006",
+    "created_at": "2026-05-01T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 50,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-006",
+    "created_at": "2026-05-01T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 51,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-052",
+    "created_at": "2026-04-30T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 51,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-30T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 51,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-30T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 51,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-30T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 52,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-053",
+    "created_at": "2026-04-29T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 52,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-29T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 52,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-29T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 52,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-29T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 52,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-053",
+    "created_at": "2026-04-29T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 53,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-054",
+    "created_at": "2026-04-28T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 53,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-054",
+    "created_at": "2026-04-28T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 54,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-055",
+    "created_at": "2026-04-27T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 55,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-056",
+    "created_at": "2026-04-26T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 55,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 56,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-057",
+    "created_at": "2026-04-25T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 56,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-25T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 56,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-25T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 57,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-058",
+    "created_at": "2026-04-24T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 57,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 57,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 57,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 58,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-059",
+    "created_at": "2026-04-23T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 58,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 58,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 58,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 58,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-059",
+    "created_at": "2026-04-23T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 59,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-060",
+    "created_at": "2026-04-22T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 59,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-060",
+    "created_at": "2026-04-22T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 60,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-061",
+    "created_at": "2026-04-21T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 61,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-062",
+    "created_at": "2026-04-20T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 61,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 62,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-063",
+    "created_at": "2026-04-19T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 62,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-19T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 62,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-19T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 63,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-064",
+    "created_at": "2026-04-18T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 63,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-18T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 63,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-18T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 63,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-18T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 64,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-065",
+    "created_at": "2026-04-17T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 64,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-17T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 64,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-17T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 64,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-17T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 64,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-065",
+    "created_at": "2026-04-17T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 65,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-066",
+    "created_at": "2026-04-15T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 65,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-066",
+    "created_at": "2026-04-16T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 66,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-067",
+    "created_at": "2026-04-14T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 67,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-068",
+    "created_at": "2026-04-13T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 67,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-13T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 68,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-069",
+    "created_at": "2026-04-12T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 68,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-12T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 68,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-12T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 69,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-070",
+    "created_at": "2026-04-11T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 69,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-11T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 69,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-11T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 69,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-12T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 70,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-071",
+    "created_at": "2026-04-10T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 70,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-10T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 70,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-10T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 70,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-11T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 70,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-071",
+    "created_at": "2026-04-11T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 71,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-072",
+    "created_at": "2026-04-09T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 71,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-072",
+    "created_at": "2026-04-10T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 72,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-073",
+    "created_at": "2026-04-09T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 73,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-074",
+    "created_at": "2026-04-08T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 73,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-08T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 74,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-075",
+    "created_at": "2026-04-07T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 74,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-07T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 74,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-07T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 75,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-076",
+    "created_at": "2026-04-06T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 75,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-06T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 75,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-06T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 75,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-07T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 76,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-077",
+    "created_at": "2026-04-05T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 76,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-05T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 76,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-05T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 76,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-06T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 76,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-077",
+    "created_at": "2026-04-06T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 77,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-078",
+    "created_at": "2026-04-04T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 77,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-078",
+    "created_at": "2026-04-04T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 78,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-079",
+    "created_at": "2026-04-03T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 79,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-080",
+    "created_at": "2026-04-02T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 79,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-02T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 80,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-001",
+    "created_at": "2026-04-01T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 80,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-01T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 80,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-01T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 81,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-002",
+    "created_at": "2026-03-31T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 81,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-007",
+    "created_at": "2026-03-31T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 81,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-007",
+    "created_at": "2026-03-31T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 81,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-01T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 82,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-003",
+    "created_at": "2026-03-30T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 82,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-03-30T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 82,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-008",
+    "created_at": "2026-03-30T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 82,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-008",
+    "created_at": "2026-03-31T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 82,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-003",
+    "created_at": "2026-03-31T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 83,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-004",
+    "created_at": "2026-03-29T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 83,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-004",
+    "created_at": "2026-03-29T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 84,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-005",
+    "created_at": "2026-03-28T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 85,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-006",
+    "created_at": "2026-03-27T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 85,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-27T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 86,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-007",
+    "created_at": "2026-03-26T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 86,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-012",
+    "created_at": "2026-03-26T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 86,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-012",
+    "created_at": "2026-03-26T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 87,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-008",
+    "created_at": "2026-03-25T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 87,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-013",
+    "created_at": "2026-03-25T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 87,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-013",
+    "created_at": "2026-03-25T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 87,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-013",
+    "created_at": "2026-03-26T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 88,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-009",
+    "created_at": "2026-03-24T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 88,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-03-24T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 88,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-014",
+    "created_at": "2026-03-24T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 88,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-014",
+    "created_at": "2026-03-25T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 88,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-009",
+    "created_at": "2026-03-25T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 89,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-010",
+    "created_at": "2026-03-22T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 89,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-010",
+    "created_at": "2026-03-23T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 90,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-011",
+    "created_at": "2026-05-05T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 91,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-012",
+    "created_at": "2026-05-04T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 91,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-04T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 92,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-013",
+    "created_at": "2026-05-03T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 92,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-03T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 92,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-03T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 93,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-014",
+    "created_at": "2026-05-02T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 93,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-02T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 93,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-02T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 93,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-004",
+    "created_at": "2026-05-04T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 94,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-015",
+    "created_at": "2026-05-01T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 94,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-01T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 94,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-01T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 94,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-03T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 94,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-015",
+    "created_at": "2026-05-03T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 95,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-016",
+    "created_at": "2026-04-30T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 95,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-016",
+    "created_at": "2026-05-01T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 96,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-017",
+    "created_at": "2026-04-30T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 97,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-018",
+    "created_at": "2026-04-29T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 97,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-29T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 98,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-019",
+    "created_at": "2026-04-28T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 98,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-28T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 98,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-009",
+    "created_at": "2026-04-28T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 99,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-020",
+    "created_at": "2026-04-27T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 99,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 99,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 99,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-010",
+    "created_at": "2026-04-27T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 100,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-021",
+    "created_at": "2026-04-26T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 100,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 100,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 100,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 100,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-021",
+    "created_at": "2026-04-26T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 101,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-022",
+    "created_at": "2026-04-25T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 101,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-022",
+    "created_at": "2026-04-25T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 102,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-023",
+    "created_at": "2026-04-24T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 103,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-024",
+    "created_at": "2026-04-23T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 103,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 104,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-025",
+    "created_at": "2026-04-22T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 104,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-22T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 104,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-015",
+    "created_at": "2026-04-22T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 105,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-026",
+    "created_at": "2026-04-21T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 105,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 105,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 105,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-001",
+    "created_at": "2026-04-21T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 106,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-027",
+    "created_at": "2026-04-20T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 106,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 106,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 106,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-20T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 106,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-027",
+    "created_at": "2026-04-20T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 107,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-028",
+    "created_at": "2026-04-19T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 107,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-028",
+    "created_at": "2026-04-19T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 108,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-029",
+    "created_at": "2026-04-18T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 109,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-030",
+    "created_at": "2026-04-17T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 109,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-17T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 110,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-031",
+    "created_at": "2026-04-16T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 110,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-16T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 110,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-16T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 111,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-032",
+    "created_at": "2026-04-15T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 111,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-15T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 111,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-15T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 111,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-15T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 112,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-033",
+    "created_at": "2026-04-14T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 112,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-14T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 112,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-14T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 112,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-14T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 112,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-033",
+    "created_at": "2026-04-14T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 113,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-034",
+    "created_at": "2026-04-12T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 113,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-034",
+    "created_at": "2026-04-13T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 114,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-035",
+    "created_at": "2026-04-11T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 115,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-036",
+    "created_at": "2026-04-10T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 115,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-10T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 116,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-037",
+    "created_at": "2026-04-09T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 116,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-09T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 116,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-09T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 117,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-038",
+    "created_at": "2026-04-08T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 117,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-08T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 117,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-08T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 117,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-09T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 118,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-039",
+    "created_at": "2026-04-07T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 118,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-07T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 118,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-07T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 118,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-08T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 118,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-039",
+    "created_at": "2026-04-08T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 119,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-040",
+    "created_at": "2026-04-06T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 119,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-040",
+    "created_at": "2026-04-07T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 120,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-041",
+    "created_at": "2026-04-06T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 121,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-042",
+    "created_at": "2026-04-05T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 121,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-04-05T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 122,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-043",
+    "created_at": "2026-04-04T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 122,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-04T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 122,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-04-04T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 123,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-044",
+    "created_at": "2026-04-03T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 123,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-03T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 123,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-03T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 123,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-004",
+    "created_at": "2026-04-04T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 124,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-045",
+    "created_at": "2026-04-02T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 124,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-02T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 124,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-02T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 124,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-005",
+    "created_at": "2026-04-03T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 124,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-045",
+    "created_at": "2026-04-03T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 125,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-046",
+    "created_at": "2026-04-01T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 125,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-046",
+    "created_at": "2026-04-01T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 126,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-047",
+    "created_at": "2026-03-31T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 127,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-048",
+    "created_at": "2026-03-30T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 127,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-03-30T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 128,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-049",
+    "created_at": "2026-03-29T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 128,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-009",
+    "created_at": "2026-03-29T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 128,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-009",
+    "created_at": "2026-03-29T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 129,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-050",
+    "created_at": "2026-03-28T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 129,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-28T08:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 129,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-28T10:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 129,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-010",
+    "created_at": "2026-03-29T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 130,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-051",
+    "created_at": "2026-03-27T06:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 130,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-27T07:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 130,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-27T09:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 130,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-011",
+    "created_at": "2026-03-28T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 130,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-051",
+    "created_at": "2026-03-28T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 131,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-052",
+    "created_at": "2026-03-26T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 131,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-052",
+    "created_at": "2026-03-26T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 132,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-053",
+    "created_at": "2026-03-25T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 133,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-054",
+    "created_at": "2026-03-24T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 133,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-03-24T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 134,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-055",
+    "created_at": "2026-03-23T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 134,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-015",
+    "created_at": "2026-03-23T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 134,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-015",
+    "created_at": "2026-03-23T05:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 135,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-056",
+    "created_at": "2026-05-06T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 135,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-06T02:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 135,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-06T04:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 135,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-001",
+    "created_at": "2026-05-07T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 136,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-057",
+    "created_at": "2026-05-05T00:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 136,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-05T01:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 136,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-05T03:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 136,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-002",
+    "created_at": "2026-05-06T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 136,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-057",
+    "created_at": "2026-05-06T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 137,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-058",
+    "created_at": "2026-05-03T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 137,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-058",
+    "created_at": "2026-05-04T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 138,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-059",
+    "created_at": "2026-05-02T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 139,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-060",
+    "created_at": "2026-05-01T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 139,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-005",
+    "created_at": "2026-05-01T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 140,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-061",
+    "created_at": "2026-04-30T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 140,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-30T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 140,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-006",
+    "created_at": "2026-04-30T23:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 141,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-062",
+    "created_at": "2026-04-29T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 141,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-29T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 141,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-007",
+    "created_at": "2026-04-29T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 141,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-007",
+    "created_at": "2026-05-01T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 142,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-063",
+    "created_at": "2026-04-28T18:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 142,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-28T19:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 142,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-28T21:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 142,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-008",
+    "created_at": "2026-04-30T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 142,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-063",
+    "created_at": "2026-04-30T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 143,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-064",
+    "created_at": "2026-04-27T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 143,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-064",
+    "created_at": "2026-04-28T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 144,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-065",
+    "created_at": "2026-04-27T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 145,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-066",
+    "created_at": "2026-04-26T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 145,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-011",
+    "created_at": "2026-04-26T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 146,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-067",
+    "created_at": "2026-04-25T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 146,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-25T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 146,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-012",
+    "created_at": "2026-04-25T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 147,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-068",
+    "created_at": "2026-04-24T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 147,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T14:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 147,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T16:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 147,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-013",
+    "created_at": "2026-04-24T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 148,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-069",
+    "created_at": "2026-04-23T12:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 148,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T13:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 148,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 148,
+    "note": "Ticket resolved by support agent",
+    "from_status": "in_progress",
+    "to_status": "resolved",
+    "actor_id": "agent-014",
+    "created_at": "2026-04-23T20:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 148,
+    "note": "Ticket closed after confirmation",
+    "from_status": "resolved",
+    "to_status": "closed",
+    "actor_id": "user-069",
+    "created_at": "2026-04-23T22:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 149,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-070",
+    "created_at": "2026-04-22T11:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 149,
+    "note": "Ticket cancelled by requestor",
+    "from_status": "new",
+    "to_status": "cancelled",
+    "actor_id": "user-070",
+    "created_at": "2026-04-22T17:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 150,
+    "note": "Ticket created by requestor",
+    "from_status": "new",
+    "to_status": "new",
+    "actor_id": "user-071",
+    "created_at": "2026-04-21T10:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "blank_actor_id",
+    "ticket_id": 1,
+    "note": "Import should duplicate events status.",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "",
+    "created_at": "2026-05-05T16:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "invalid_from_status",
+    "ticket_id": 1,
+    "note": "Import should reject unknown from_status values.",
+    "from_status": "opened",
+    "to_status": "assigned",
+    "actor_id": "agent-904",
+    "created_at": "2026-05-05T16:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "invalid_to_status",
+
+    "ticket_id": 1,
+    "note": "Import should reject unknown to_status values.",
+    "from_status": "new",
+    "to_status": "reopened",
+    "actor_id": "agent-905",
+    "created_at": "2026-05-05T16:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "illegal_status_transition",
+
+    "ticket_id": 1,
+    "note": "Import should reject transitions that skip required states.",
+    "from_status": "new",
+    "to_status": "resolved",
+    "actor_id": "agent-906",
+    "created_at": "2026-05-05T16:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "transition_after_terminal_cancelled",
+    "ticket_id": 149,
+    "note": "Import should reject any event after a ticket has already been cancelled.",
+    "from_status": "cancelled",
+    "to_status": "assigned",
+    "actor_id": "agent-907",
+    "created_at": "2026-04-22T18:59:49.129094074+07:00"
+  },
+  {
+    "validation_case": "transition_after_terminal_closed",
+    "ticket_id": 148,
+    "note": "Import should reject any event after a ticket has already been closed.",
+    "from_status": "closed",
+    "to_status": "in_progress",
+    "actor_id": "agent-908",
+    "created_at": "2026-04-24T08:59:49.129094074+07:00"
+  }
+]
