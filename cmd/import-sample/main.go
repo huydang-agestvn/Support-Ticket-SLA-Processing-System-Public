@@ -1,50 +1,40 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"math/rand"
-	"time"
+	"log"
+	"os"
 
+	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/service"
 	"support-ticket.com/internal/worker"
 )
 
-func generateMockEvents() []worker.Event {
-	rand.Seed(time.Now().UnixNano())
-
-	statuses := []string{
-		"accepted",
-		"rejected",
-		"duplicate",
-	}
-
-	events := make([]worker.Event, 1000)
-
-	for i := 0; i < 1000; i++ {
-		events[i] = worker.Event{
-			ID:     i + 1,
-			Status: statuses[rand.Intn(len(statuses))],
-		}
-	}
-
-	return events
-}
+const numWorkers = 5
 
 func main() {
-	start := time.Now()
-	defer func() {
-		fmt.Println()
-		fmt.Printf("Total time: %v\n", time.Since(start))
-	}()
-	events := generateMockEvents()
+	events, err := loadEvents("./cmd/import-sample/ticket_events_sample.json")
+	if err != nil {
+		log.Fatalf("failed to load events: %v", err)
+	}
 
-	result := worker.StartTicketPool(events, 5)
+	svc := service.NewTicketService()
 
-	fmt.Printf(
-		`{"accepted_count": %d, "rejected_count": %d, "duplicate_count": %d}`,
-		result.Accepted,
-		result.Rejected,
-		result.Duplicate,
-	)
+	result := worker.Run(events, numWorkers, svc)
 
+	out, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Println(string(out))
 }
 
+func loadEvents(path string) ([]domain.TicketEvent, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var events []domain.TicketEvent
+	if err := json.Unmarshal(data, &events); err != nil {
+		return nil, err
+	}
+	return events, nil
+}
