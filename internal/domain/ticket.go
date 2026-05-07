@@ -26,7 +26,7 @@ const (
 )
 
 type Ticket struct {
-	ID          string       `json:"id"`
+	ID          uint         `json:"id" gorm:"primarykey"`
 	AssigneeID  string       `json:"assignee_id"`
 	RequestorID string       `json:"requestor_id"`
 	Title       string       `json:"title"`

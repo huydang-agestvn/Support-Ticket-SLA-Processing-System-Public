@@ -7,8 +7,8 @@ import (
 )
 
 type TicketEvent struct {
-	ID         string       `json:"event_id"`
-	TicketID   string       `json:"ticket_id"`
+	ID         uint         `json:"event_id" gorm:"primarykey"`
+	TicketID   uint         `json:"ticket_id"`
 	Note       string       `json:"note"`
 	FromStatus TicketStatus `json:"from_status"`
 	ToStatus   TicketStatus `json:"to_status"`
@@ -22,12 +22,6 @@ type BatchImportResult struct {
 }
 
 func (e *TicketEvent) Validate() error {
-	if strings.TrimSpace(e.ID) == "" {
-		return fmt.Errorf("%w: Ticket Event ID is required", ErrValidation)
-	}
-	if strings.TrimSpace(e.TicketID) == "" {
-		return fmt.Errorf("%w: Ticket ID is required", ErrValidation)
-	}
 	if strings.TrimSpace(e.ActorID) == "" {
 		return fmt.Errorf("%w: Actor ID is required", ErrValidation)
 	}
