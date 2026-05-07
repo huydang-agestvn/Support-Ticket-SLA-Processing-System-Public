@@ -6,7 +6,7 @@ import (
 )
 
 type TicketReport struct {
-	ID                  int       `json:"id"`
+	ID                  uint      `json:"id" gorm:"primarykey"`
 	ReportDate          time.Time `json:"report_date"`
 	NewCount            int       `json:"new_count"`
 	ResolvedCount       int       `json:"resolved_count"`
