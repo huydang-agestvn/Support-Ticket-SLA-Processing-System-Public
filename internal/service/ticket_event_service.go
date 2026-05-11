@@ -23,14 +23,11 @@ type TicketEventService interface {
 
 type ticketEventService struct {
 	eventRepo  repository.TicketEventRepository
-	seenMu     sync.Mutex
-	seenEvents map[string]bool
 }
 
 func NewTicketEventService(eventRepo repository.TicketEventRepository) TicketEventService {
     return &ticketEventService{
         eventRepo:  eventRepo,
-        seenEvents: make(map[string]bool), 
     }
 }
 
@@ -49,24 +46,29 @@ const (
 
 
 
-func (s *ticketEventService) ProcessEvent(event *domain.TicketEvent) (EventResult, error) {
-	// 1. Check duplicate
-	key := fmt.Sprintf("%d|%s|%s", event.TicketID, event.FromStatus, event.ToStatus)
+func (s *ticketEventService) processEvent(
+    event *domain.TicketEvent,
+    seen map[string]bool,
+    mu *sync.Mutex,
+) (EventResult, error) {
+    key := fmt.Sprintf("%d|%s|%s", event.TicketID, event.FromStatus, event.ToStatus)
 
-	s.seenMu.Lock()
-	if s.seenEvents[key] {
-		s.seenMu.Unlock()
-		return ResultDuplicate, nil
-	}
-	s.seenEvents[key] = true
-	s.seenMu.Unlock()
+    mu.Lock()
+    isDup := seen[key]
+    if !isDup {
+        seen[key] = true
+    }
+    mu.Unlock()
 
-	// 2. Validate transition
-	if err := event.Validate(); err != nil {
-		return ResultRejected, err
-	}
+    if isDup {
+        return ResultDuplicate, nil
+    }
 
-	return ResultAccepted, nil
+    if err := event.Validate(); err != nil {
+        return ResultRejected, err
+    }
+
+    return ResultAccepted, nil
 }
 
 func (s *ticketEventService) parseAndValidateEvents(data []byte) ([]domain.TicketEvent, error) {
@@ -86,41 +88,43 @@ func (s *ticketEventService) parseAndValidateEvents(data []byte) ([]domain.Ticke
 }
 
 func (s *ticketEventService) Import(data []byte) (domain.BatchImportResult, error) {
-	validEvents, err := s.parseAndValidateEvents(data)
-	if err != nil {
-		return domain.BatchImportResult{}, err
-	}
+    validEvents, err := s.parseAndValidateEvents(data)
+    if err != nil {
+        return domain.BatchImportResult{}, err
+    }
 
-	results := worker.Run(validEvents, func(event domain.TicketEvent) workerOutput {
-		status, _ := s.ProcessEvent(&event)
-		return workerOutput{
-			Event:  event,
-			Status: status,
-		}
-	})
+    seenEvents := make(map[string]bool)
+    var mu sync.Mutex
 
-	var eventsToInsert []domain.TicketEvent
-	finalResult := domain.BatchImportResult{}
+    results := worker.Run(validEvents, func(event domain.TicketEvent) workerOutput {
+        status, _ := s.processEvent(&event, seenEvents, &mu)
+        return workerOutput{
+            Event:  event,
+            Status: status,
+        }
+    })
 
-	for _, res := range results {
-		switch res.Status {
-		case ResultAccepted:
-			eventsToInsert = append(eventsToInsert, res.Event)
-			finalResult.AcceptedCount++
-		case ResultDuplicate:
-			finalResult.DuplicateCount++
-		case ResultRejected:
-			finalResult.RejectedCount++
-		}
-	}
+    var eventsToInsert []domain.TicketEvent
+    finalResult := domain.BatchImportResult{}
+    for _, res := range results {
+        switch res.Status {
+        case ResultAccepted:
+            eventsToInsert = append(eventsToInsert, res.Event)
+            finalResult.AcceptedCount++
+        case ResultDuplicate:
+            finalResult.DuplicateCount++
+        case ResultRejected:
+            finalResult.RejectedCount++
+        }
+    }
 
-	if len(eventsToInsert) > 0 {
-		if err := s.eventRepo.CreateBatch(eventsToInsert); err != nil {
-			return finalResult, err
-		}
-	}
+    if len(eventsToInsert) > 0 {
+        if err := s.eventRepo.CreateBatch(eventsToInsert); err != nil {
+            return finalResult, err
+        }
+    }
 
-	return finalResult, nil
+    return finalResult, nil
 }
 
 func (s *ticketEventService) GetAll(limit, offset int) ([]domain.TicketEvent, int64, error) {

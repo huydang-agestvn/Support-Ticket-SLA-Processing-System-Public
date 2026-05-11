@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"support-ticket.com/internal/config"
 	"support-ticket.com/internal/handler"
-	"support-ticket.com/internal/migrations"
+	"support-ticket.com/internal/migration"
 	"support-ticket.com/internal/repository"
 	"support-ticket.com/internal/router"
 	"support-ticket.com/internal/service"
