@@ -3,9 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/gin-gonic/gin"
 	"support-ticket.com/internal/config"
+	"support-ticket.com/internal/handler"
 	"support-ticket.com/internal/migrations"
+	"support-ticket.com/internal/repository"
+	"support-ticket.com/internal/router"
+	"support-ticket.com/internal/service"
 )
 
 func main() {
@@ -36,11 +42,28 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	// TODO: Setup HTTP server
-	// TODO: Setup routes
-	// TODO: Setup worker pool
-	// TODO: Setup middleware (auth, logging, etc)
+	// Initialize repositories
+	eventRepo := repository.NewTicketEventRepository(db)
 
-	log.Println("API server is ready. TODO: Start listening on port", cfg.ServerPort)
-	select {} // Keep running
+	// Initialize services
+	eventService := service.NewTicketEventService(eventRepo)
+
+	// Initialize handlers
+	eventHandler := handler.NewTicketEventHandler(eventService)
+
+	// Setup routes
+	r := gin.Default()
+
+	router.InitRouter(r, eventHandler)
+
+	// Start server
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf(" Server starting on port %s\n", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

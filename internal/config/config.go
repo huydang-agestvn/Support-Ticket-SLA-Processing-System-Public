@@ -86,6 +86,16 @@ func getEnv(key string) string {
 	return value
 }
 
+func GetPoolSize (key string) int {
+	value := os.Getenv(key)
+	intVal, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Error converting %s to integer: %v. Using default value 5", key, err)
+		return 5
+	}
+	return intVal
+}
+
 func getEnvInt(key string) int {
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
