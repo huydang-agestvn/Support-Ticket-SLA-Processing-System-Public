@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"support-ticket.com/internal/dto"
 	"support-ticket.com/internal/service"
 )
 
@@ -23,7 +24,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input service.LoginInput
+	var input dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
