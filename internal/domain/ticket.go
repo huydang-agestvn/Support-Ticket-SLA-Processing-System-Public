@@ -26,19 +26,21 @@ const (
 )
 
 type Ticket struct {
-	ID          uint         `json:"id" gorm:"primarykey"`
-	AssigneeID  string       `json:"assignee_id"`
-	RequestorID string       `json:"requestor_id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Priority    Priority     `json:"priority"`
-	Status      TicketStatus `json:"status"`
-	Deadline    time.Time    `json:"deadline"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
-	ResolvedAt  time.Time    `json:"resolved_at"`
-	SLADueAt    time.Time    `json:"sla_due_at"`
-	CancelledAt time.Time    `json:"cancelled_at"`
+	ID          uint         `json:"id" gorm:"primaryKey"`
+	AssigneeID  string       `json:"assignee_id" gorm:"column:assignee_id;type:varchar(255)"`
+	RequestorID string       `json:"requestor_id" gorm:"column:requestor_id;type:varchar(255);not null"`
+	Title       string       `json:"title" gorm:"column:title;type:varchar(255);not null"`
+	Description string       `json:"description" gorm:"column:description;type:text"`
+	Priority    Priority     `json:"priority" gorm:"column:priority;type:varchar(20);not null"`
+	Status      TicketStatus `json:"status" gorm:"column:status;type:varchar(20);not null"`
+	CreatedAt   time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
+	UpdatedAt   time.Time    `json:"updated_at" gorm:"column:updated_at"`
+	ResolvedAt  *time.Time   `json:"resolved_at" gorm:"column:resolved_at"`
+	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
+	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
+
+	// Relations
+	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
 }
 
 var (
@@ -106,14 +108,14 @@ func (t *Ticket) Validate() error {
 	if t.CreatedAt.IsZero() {
 		return fmt.Errorf("%w: Created At is required", ErrValidation)
 	}
-	if t.Deadline.IsZero() {
-		return fmt.Errorf("%w: Deadline is required for SLA tracking", ErrValidation)
+	if t.SLADueAt == nil || t.SLADueAt.IsZero() {
+		return fmt.Errorf("%w: SLA Due At is required for SLA tracking", ErrValidation)
 	}
-	if t.Deadline.Before(t.CreatedAt) {
-		return fmt.Errorf("%w: Deadline cannot be before creation time", ErrValidation)
+	if t.SLADueAt.Before(t.CreatedAt) {
+		return fmt.Errorf("%w: SLA Due At cannot be before creation time", ErrValidation)
 	}
 	if t.Status == StatusResolved {
-		if t.ResolvedAt.IsZero() {
+		if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
 			return fmt.Errorf("%w: Resolved At is required when status is resolved", ErrValidation)
 		}
 		if t.ResolvedAt.Before(t.CreatedAt) {
@@ -137,9 +139,9 @@ func (t *Ticket) UpdateStatus(newStatus TicketStatus, timestamp time.Time) error
 	t.UpdatedAt = timestamp
 	switch newStatus {
 	case StatusResolved:
-		t.ResolvedAt = timestamp
+		t.ResolvedAt = &timestamp
 	case StatusCancelled:
-		t.CancelledAt = timestamp
+		t.CancelledAt = &timestamp
 	}
 	return nil
 }
