@@ -39,7 +39,7 @@ type Ticket struct {
 	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
 	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
 
-	// Relations
+	// TODO:Relations
 	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
 }
 

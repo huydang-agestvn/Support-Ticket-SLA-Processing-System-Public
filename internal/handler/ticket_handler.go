@@ -30,7 +30,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 		return
 	}
 
-	ticket, err := h.ticketService.CreateTicket(c.Request.Context(), req)
+	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create ticket"})
 		return
@@ -53,7 +53,7 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 		filters["assignee_id"] = assigneeID
 	}
 
-	tickets, err := h.ticketService.ListTickets(c.Request.Context(), filters)
+	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch tickets"})
 		return
@@ -74,7 +74,7 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 		return
 	}
 
-	ticket, err := h.ticketService.GetTicket(c.Request.Context(), uint(id))
+	ticket, err := h.ticketService.FindById(c.Request.Context(), uint(id))
 	if err != nil {
 		if errors.Is(err, service.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
