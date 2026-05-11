@@ -1,8 +1,6 @@
 package worker
 
 import (
-	"fmt"
-	"runtime"
 	"sync"
 
 	"support-ticket.com/internal/config"

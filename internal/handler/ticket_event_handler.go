@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"support-ticket.com/internal/errors"
 	"support-ticket.com/internal/service"
+	"support-ticket.com/internal/errors"
 )
 
 type TicketEventHandler struct {
