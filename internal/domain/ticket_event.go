@@ -14,7 +14,7 @@ type TicketEvent struct {
 	Note       *string      `json:"note" gorm:"column:note;type:text"`
 	FromStatus TicketStatus `json:"from_status" gorm:"column:from_status;type:varchar(20);not null"`
 	ToStatus   TicketStatus `json:"to_status" gorm:"column:to_status;type:varchar(20);not null"`
-	ActorID    string       `json:"actor_id" gorm:"column:actor_id;type:varchar(255);not null"`
+	AssigneeID string       `json:"assignee_id" gorm:"column:assignee_id;type:varchar(255);not null"`
 	CreatedAt  time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
 
 	// Relations
@@ -33,8 +33,8 @@ type RejectedDetail struct {
 }
 
 func (e *TicketEvent) Validate() error {
-	if strings.TrimSpace(e.ActorID) == "" {
-		return fmt.Errorf("%w: Actor ID is required", errmsgs.ErrInvalidInput)
+	if strings.TrimSpace(e.AssigneeID) == "" {
+		return fmt.Errorf("%w: Assignee ID is required", errmsgs.ErrInvalidInput)
 	}
 	if !e.FromStatus.IsValid() {
 		return fmt.Errorf("%w: Unknown From Status '%s'", errmsgs.ErrInvalidInput, e.FromStatus)
