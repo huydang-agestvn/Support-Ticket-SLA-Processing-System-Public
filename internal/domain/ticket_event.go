@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"support-ticket.com/internal/errmsgs"
 )
 
 type TicketEvent struct {
@@ -26,19 +28,19 @@ type BatchImportResult struct {
 
 func (e *TicketEvent) Validate() error {
 	if strings.TrimSpace(e.ActorID) == "" {
-		return fmt.Errorf("%w: Actor ID is required", ErrValidation)
+		return fmt.Errorf("%w: Actor ID is required", errmsgs.ErrInvalidInput)
 	}
 	if !e.FromStatus.IsValid() {
-		return fmt.Errorf("%w: Unknown From Status '%s'", ErrValidation, e.FromStatus)
+		return fmt.Errorf("%w: Unknown From Status '%s'", errmsgs.ErrInvalidInput, e.FromStatus)
 	}
 	if !e.ToStatus.IsValid() {
-		return fmt.Errorf("%w: Unknown To Status '%s'", ErrValidation, e.ToStatus)
+		return fmt.Errorf("%w: Unknown To Status '%s'", errmsgs.ErrInvalidInput, e.ToStatus)
 	}
 	if e.FromStatus != e.ToStatus && !e.FromStatus.CanTransitionTo(e.ToStatus) {
-		return fmt.Errorf("%w: Illegal event transition intent from '%s' to '%s'", ErrInvalidTransition, e.FromStatus, e.ToStatus)
+		return fmt.Errorf("%w: Illegal event transition intent from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, e.FromStatus, e.ToStatus)
 	}
 	if e.CreatedAt.IsZero() {
-		return fmt.Errorf("%w: Event created_at is required", ErrValidation)
+		return fmt.Errorf("%w: Event created_at is required", errmsgs.ErrInvalidInput)
 	}
 	return nil
 }

@@ -3,6 +3,8 @@ package domain
 import (
 	"fmt"
 	"time"
+
+	"support-ticket.com/internal/errmsgs"
 )
 
 type TicketReport struct {
@@ -21,19 +23,19 @@ type TicketReport struct {
 
 func (r *TicketReport) Validate() error {
 	if r.ReportDate.IsZero() {
-		return fmt.Errorf("%w: Report date is required", ErrValidation)
+		return fmt.Errorf("%w: Report date is required", errmsgs.ErrInvalidInput)
 	}
 	if r.NewCount < 0 || r.ResolvedCount < 0 || r.CancelledCount < 0 {
-		return fmt.Errorf("%w: Status counts cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Status counts cannot be negative", errmsgs.ErrInvalidInput)
 	}
 	if r.OverdueCount < 0 {
-		return fmt.Errorf("%w: Overdue count cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Overdue count cannot be negative", errmsgs.ErrInvalidInput)
 	}
 	if r.AvgResolutionTime < 0 {
-		return fmt.Errorf("%w: Average resolution time cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Average resolution time cannot be negative", errmsgs.ErrInvalidInput)
 	}
 	if r.HighPriorityCount < 0 || r.MediumPriorityCount < 0 || r.LowPriorityCount < 0 {
-		return fmt.Errorf("%w: Priority counts cannot be negative", ErrValidation)
+		return fmt.Errorf("%w: Priority counts cannot be negative", errmsgs.ErrInvalidInput)
 	}
 	return nil
 }

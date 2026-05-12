@@ -1,10 +1,11 @@
 package domain
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
+
+	"support-ticket.com/internal/errmsgs"
 )
 
 type TicketStatus string
@@ -42,11 +43,6 @@ type Ticket struct {
 	// TODO:Relations
 	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
 }
-
-var (
-	ErrValidation        = errors.New("ticket validation failed")
-	ErrInvalidTransition = errors.New("invalid status transition")
-)
 
 func (p Priority) IsValid() bool {
 	switch p {
@@ -91,35 +87,35 @@ func (s TicketStatus) CanTransitionTo(next TicketStatus) bool {
 
 func (t *Ticket) Validate() error {
 	if strings.TrimSpace(t.Title) == "" {
-		return fmt.Errorf("%w: Title is required", ErrValidation)
+		return fmt.Errorf("%w: Title is required", errmsgs.ErrInvalidInput)
 	}
 	if strings.TrimSpace(t.Description) == "" {
-		return fmt.Errorf("%w: Description is required", ErrValidation)
+		return fmt.Errorf("%w: Description is required", errmsgs.ErrInvalidInput)
 	}
 	if strings.TrimSpace(t.RequestorID) == "" {
-		return fmt.Errorf("%w: Requestor ID is required", ErrValidation)
+		return fmt.Errorf("%w: Requestor ID is required", errmsgs.ErrInvalidInput)
 	}
 	if !t.Priority.IsValid() {
-		return fmt.Errorf("%w: Unknown priority '%s'", ErrValidation, t.Priority)
+		return fmt.Errorf("%w: Unknown priority '%s'", errmsgs.ErrInvalidInput, t.Priority)
 	}
 	if !t.Status.IsValid() {
-		return fmt.Errorf("%w: Unknown status '%s'", ErrValidation, t.Status)
+		return fmt.Errorf("%w: Unknown status '%s'", errmsgs.ErrInvalidInput, t.Status)
 	}
 	if t.CreatedAt.IsZero() {
-		return fmt.Errorf("%w: Created At is required", ErrValidation)
+		return fmt.Errorf("%w: Created At is required", errmsgs.ErrInvalidInput)
 	}
 	if t.SLADueAt == nil || t.SLADueAt.IsZero() {
-		return fmt.Errorf("%w: SLA Due At is required for SLA tracking", ErrValidation)
+		return fmt.Errorf("%w: SLA Due At is required for SLA tracking", errmsgs.ErrInvalidInput)
 	}
 	if t.SLADueAt.Before(t.CreatedAt) {
-		return fmt.Errorf("%w: SLA Due At cannot be before creation time", ErrValidation)
+		return fmt.Errorf("%w: SLA Due At cannot be before creation time", errmsgs.ErrInvalidInput)
 	}
 	if t.Status == StatusResolved {
 		if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
-			return fmt.Errorf("%w: Resolved At is required when status is resolved", ErrValidation)
+			return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
 		}
 		if t.ResolvedAt.Before(t.CreatedAt) {
-			return fmt.Errorf("%w: Resolved At cannot be before Created At", ErrValidation)
+			return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
 		}
 	}
 	return nil
@@ -127,13 +123,13 @@ func (t *Ticket) Validate() error {
 
 func (t *Ticket) UpdateStatus(newStatus TicketStatus, timestamp time.Time) error {
 	if t.Status == newStatus {
-		return fmt.Errorf("Status is already set to '%s': %w", newStatus, ErrInvalidTransition)
+		return fmt.Errorf("Status is already set to '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
 	}
 	if !newStatus.IsValid() {
-		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, ErrInvalidTransition)
+		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
 	}
 	if !t.Status.CanTransitionTo(newStatus) {
-		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, ErrInvalidTransition)
+		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, errmsgs.ErrInvalidStatusTransition)
 	}
 	t.Status = newStatus
 	t.UpdatedAt = timestamp

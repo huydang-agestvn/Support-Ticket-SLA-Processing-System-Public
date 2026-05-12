@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"support-ticket.com/internal/domain"
 	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/service"
 )
 
@@ -76,7 +77,7 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 
 	ticket, err := h.ticketService.FindById(c.Request.Context(), uint(id))
 	if err != nil {
-		if errors.Is(err, service.ErrTicketNotFound) {
+		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
@@ -106,11 +107,11 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 
 	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), newStatus)
 	if err != nil {
-		if errors.Is(err, service.ErrTicketNotFound) {
+		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
-		if errors.Is(err, domain.ErrInvalidTransition) || errors.Is(err, domain.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrInvalidInput) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
