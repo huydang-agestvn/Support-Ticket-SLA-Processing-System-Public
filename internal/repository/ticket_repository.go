@@ -14,6 +14,7 @@ type TicketRepository interface {
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
 	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
 	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
+	GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error)
 }
 
 type ticketRepositoryImpl struct {
@@ -78,4 +79,19 @@ func (r *ticketRepositoryImpl) UpdateStatusWithEvent(ctx context.Context, ticket
 
 		return nil
 	})
+}
+
+func (r *ticketRepositoryImpl) GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error) {
+	var existingIDs []uint
+	err := r.db.WithContext(ctx).Model(&domain.Ticket{}).Where("id IN ?", ticketIDs).Pluck("id", &existingIDs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[uint]bool)
+	for _, id := range existingIDs {
+		result[id] = true
+	}
+
+	return result, nil
 }
