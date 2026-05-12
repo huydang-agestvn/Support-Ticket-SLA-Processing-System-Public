@@ -12,7 +12,8 @@ test-cover:
 
 # Start app and PostgreSQL with Docker Compose
 docker-up:
-	sudo docker compose up --build
+# 	sudo docker compose up --build ( TODO: if code update will run this)
+	sudo docker compose up
 
 # Stop Docker Compose services
 docker-down:

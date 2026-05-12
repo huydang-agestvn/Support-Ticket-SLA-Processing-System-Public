@@ -1,0 +1,173 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: API documentation for Support Ticket SLA Processing System.
+  title: Support Ticket SLA Processing System API
+  version: "1.0"
+paths:
+  /ticket-events/import:
+    post:
+      consumes:
+      - application/json
+      description: Import ticket events in batch using worker pool
+      parameters:
+      - description: Import ticket events request
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Import ticket events
+      tags:
+      - ticket-events
+  /tickets:
+    get:
+      description: Get list of support tickets
+      parameters:
+      - description: Ticket status
+        in: query
+        name: status
+        type: string
+      - description: Ticket priority
+        in: query
+        name: priority
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List tickets
+      tags:
+      - tickets
+    post:
+      consumes:
+      - application/json
+      description: Create a new support ticket
+      parameters:
+      - description: Create ticket request
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create ticket
+      tags:
+      - tickets
+  /tickets/{id}:
+    get:
+      description: Get ticket detail by ticket ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get ticket detail
+      tags:
+      - tickets
+  /tickets/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update ticket status by ticket ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update status request
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update ticket status
+      tags:
+      - tickets
+swagger: "2.0"

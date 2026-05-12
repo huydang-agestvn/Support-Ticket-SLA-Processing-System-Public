@@ -19,6 +19,17 @@ func NewTicketEventHandler(service service.TicketEventService) *TicketEventHandl
 	}
 }
 
+// ImportEvents godoc
+// @Summary Import ticket events
+// @Description Import ticket events in batch using worker pool
+// @Tags ticket-events
+// @Accept json
+// @Produce json
+// @Param request body map[string]interface{} true "Import ticket events request"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /ticket-events/import [post]
 func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := io.ReadAll(c.Request.Body)

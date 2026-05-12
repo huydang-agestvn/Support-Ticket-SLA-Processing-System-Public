@@ -22,7 +22,17 @@ func NewTicketHandler(s service.TicketService) *TicketHandler {
 	}
 }
 
-// API: POST /tickets
+// HandleCreateTicket godoc
+// @Summary Create ticket
+// @Description Create a new support ticket
+// @Tags tickets
+// @Accept json
+// @Produce json
+// @Param request body map[string]interface{} true "Create ticket request"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tickets [post]
 func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 	var req dto.CreateTicketReq
 
@@ -50,7 +60,16 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"data": ticket})
 }
 
-// API: GET /tickets
+// HandleListTickets godoc
+// @Summary List tickets
+// @Description Get list of support tickets
+// @Tags tickets
+// @Produce json
+// @Param status query string false "Ticket status"
+// @Param priority query string false "Ticket priority"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /tickets [get]
 func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 	filters := map[string]interface{}{}
 
@@ -76,7 +95,16 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": tickets})
 }
 
-// API: GET /tickets/:id
+// HandleGetTicket godoc
+// @Summary Get ticket detail
+// @Description Get ticket detail by ticket ID
+// @Tags tickets
+// @Produce json
+// @Param id path int true "Ticket ID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /tickets/{id} [get]
 func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
@@ -98,7 +126,18 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": ticket})
 }
 
-// API: PATCH /tickets/:id/status
+// HandleUpdateStatus godoc
+// @Summary Update ticket status
+// @Description Update ticket status by ticket ID
+// @Tags tickets
+// @Accept json
+// @Produce json
+// @Param id path int true "Ticket ID"
+// @Param request body map[string]interface{} true "Update status request"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Router /tickets/{id}/status [patch]
 func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
