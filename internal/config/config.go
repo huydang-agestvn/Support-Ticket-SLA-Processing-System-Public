@@ -23,7 +23,7 @@ type Config struct {
 	DB             *gorm.DB
 }
 
-// LoadConfig 
+// LoadConfig
 func LoadConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
@@ -31,11 +31,11 @@ func LoadConfig() *Config {
 	}
 
 	cfg := &Config{
-		// Database: Found environment variables for database configuration	
+		// Database: Found environment variables for database configuration
 		DBHost:     getEnv("DB_HOST"),
 		DBPort:     getEnvInt("DB_PORT"),
 		DBUser:     getEnv("DB_USER"),
-		DBPassword: getEnv("DB_PASSWORD"), 
+		DBPassword: getEnv("DB_PASSWORD"),
 		DBName:     getEnv("DB_NAME"),
 		DBSSLMode:  getEnv("DB_SSLMODE"),
 
@@ -66,7 +66,7 @@ func (c *Config) GetDatabase() (*gorm.DB, error) {
 
 	for i := 0; i < maxRetries; i++ {
 		// Lưu ý: Bạn cần đảm bảo hàm initDatabase(c) đã được định nghĩa ở file khác trong package config
-		db, err = initDatabase(c) 
+		db, err = initDatabase(c)
 		if err == nil {
 			c.DB = db
 			return db, nil
@@ -86,12 +86,21 @@ func getEnv(key string) string {
 	return value
 }
 
-func GetPoolSize (key string) int {
+func GetPoolSize(key string) int {
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
 	if err != nil {
 		log.Printf("Error converting %s to integer: %v. Using default value 5", key, err)
 		return 5
+	}
+	return intVal
+}
+func GetBatchSize(key string) int {
+	value := os.Getenv(key)
+	intVal, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Error converting %s to integer: %v. Using default value 1000", key, err)
+		return 1000
 	}
 	return intVal
 }

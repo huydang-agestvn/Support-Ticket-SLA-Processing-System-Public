@@ -10,8 +10,7 @@ import (
 type TicketEventRepository interface {
 	CreateBatch(events []domain.TicketEvent) error
 	Create(ctx context.Context, event *domain.TicketEvent) error
-	// FindTransitionEvent checks if an event with this exact transition already exists
-	FindTransitionEvent(ctx context.Context, ticketID uint, fromStatus, toStatus domain.TicketStatus) (*domain.TicketEvent, error)
+	GetExistingEventKeys(ctx context.Context, keys []string) (map[string]bool, error)
 }
 
 type ticketEventRepository struct {
@@ -30,19 +29,17 @@ func (r *ticketEventRepository) Create(ctx context.Context, event *domain.Ticket
 	return r.db.WithContext(ctx).Create(event).Error
 }
 
-// FindTransitionEvent checks if an event with this exact transition already exists
-func (r *ticketEventRepository) FindTransitionEvent(ctx context.Context, ticketID uint, fromStatus, toStatus domain.TicketStatus) (*domain.TicketEvent, error) {
-	var event domain.TicketEvent
-	err := r.db.WithContext(ctx).
-		Where("ticket_id = ? AND from_status = ? AND to_status = ?", ticketID, fromStatus, toStatus).
-		First(&event).Error
-
+func (r *ticketEventRepository) GetExistingEventKeys(ctx context.Context, keys []string) (map[string]bool, error) {
+	var existingKeys []string
+	err := r.db.WithContext(ctx).Raw("SELECT CONCAT(ticket_id, '|', from_status, '|', to_status) as key FROM ticket_events WHERE CONCAT(ticket_id, '|', from_status, '|', to_status) IN (?)", keys).Scan(&existingKeys).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
 		return nil, err
 	}
 
-	return &event, nil
+	result := make(map[string]bool)
+	for _, key := range existingKeys {
+		result[key] = true
+	}
+
+	return result, nil
 }

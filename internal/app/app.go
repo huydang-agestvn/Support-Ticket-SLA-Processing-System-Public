@@ -69,7 +69,7 @@ func (a *App) setupDependencies() {
 	eventRepo := repository.NewTicketEventRepository(a.db)
 
 	ticketService := service.NewTicketService(ticketRepo, eventRepo)
-	eventService := service.NewTicketEventService(eventRepo)
+	eventService := service.NewTicketEventService(eventRepo, ticketRepo)
 
 	ticketHandler := handler.NewTicketHandler(ticketService)
 	eventHandler := handler.NewTicketEventHandler(eventService)
