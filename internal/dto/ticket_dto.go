@@ -11,4 +11,5 @@ type CreateTicketReq struct {
 
 type UpdateStatusReq struct {
 	Status string `json:"status" binding:"required"`
+	
 }
