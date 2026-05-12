@@ -20,13 +20,14 @@ func NewTicketEventHandler(service service.TicketEventService) *TicketEventHandl
 }
 
 func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
+	ctx := c.Request.Context()
 	data, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Không thể đọc dữ liệu đầu vào"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errors.ErrInvalidInput})
 		return
 	}
 	defer c.Request.Body.Close()
-	result, err := h.service.Import(data)
+	result, err := h.service.Import(ctx, data)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": errors.ErrInvalidInput,
@@ -36,7 +37,7 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Import hoàn tất",
+		"message": "import completed",
 		"data":    result,
 	})
 }
