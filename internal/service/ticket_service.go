@@ -2,17 +2,13 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	"support-ticket.com/internal/domain"
 	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/repository"
-)
-
-var (
-	ErrTicketNotFound = errors.New("ticket not found")
 )
 
 type TicketService interface {
@@ -80,7 +76,7 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	}
 
 	if ticket == nil {
-		return nil, ErrTicketNotFound
+		return nil, errmsgs.ErrTicketNotFound
 	}
 
 	return ticket, nil
@@ -98,7 +94,7 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]inte
 func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus) error {
 	ticket, err := s.FindById(ctx, id)
 	if err != nil {
-		return err 
+		return err
 	}
 
 	now := time.Now()

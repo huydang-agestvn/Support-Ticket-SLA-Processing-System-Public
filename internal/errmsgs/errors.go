@@ -1,4 +1,4 @@
-package errors
+package errmsgs
 
 import "errors"
 
@@ -10,4 +10,6 @@ var (
 	ErrUnauthorized            = errors.New("unauthorized")
 	ErrConflict                = errors.New("conflict")
 	ErrInternal                = errors.New("internal server error")
+	ErrValidation              = errors.New("ticket validation failed")
+	ErrTicketNotFound          = errors.New("ticket not found")
 )
