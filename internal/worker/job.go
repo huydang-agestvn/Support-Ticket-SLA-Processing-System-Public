@@ -3,55 +3,44 @@ package worker
 import (
 	"sync"
 
-	"support-ticket.com/internal/domain"
-	"support-ticket.com/internal/service"
+	"support-ticket.com/internal/config"
 )
 
-type jobResult struct {
-	result service.EventResult
+type JobResult[R any] struct {
+	Value R
+	Err   error
 }
-// Run worker pool
-func Run(events []domain.TicketEvent, numWorkers int, svc *service.TicketService) domain.BatchImportResult {
-	jobs := make(chan domain.TicketEvent, len(events))
-	results := make(chan jobResult, len(events))
 
-	// spawn N workers
+var worker = config.GetPoolSize("WORKER_POOL_SIZE")
+
+func Run[T any, R any](items []T, job func(T) R) []R {
+	jobs := make(chan T, len(items))
+	results := make(chan R, len(items))
 	var wg sync.WaitGroup
-	for i := 0; i < numWorkers; i++ {
+
+	for i := 0; i < worker; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for event := range jobs {
-				e := event
-				r, _ := svc.ProcessEvent(&e)
-				results <- jobResult{result: r}
+			for item := range jobs {
+				results <- job(item)
 			}
 		}()
 	}
 
-	//Close
-	for _, e := range events {
-		jobs <- e
+	for _, item := range items {
+		jobs <- item
 	}
-	close(jobs) 
+	close(jobs)
 
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
 
-	// Output
-	var summary domain.BatchImportResult
+	var allResults []R
 	for r := range results {
-		switch r.result {
-		case service.ResultAccepted:
-			summary.AcceptedCount++
-		case service.ResultRejected:
-			summary.RejectedCount++
-		case service.ResultDuplicate:
-			summary.DuplicateCount++
-		}
+		allResults = append(allResults, r)
 	}
-
-	return summary
+	return allResults
 }

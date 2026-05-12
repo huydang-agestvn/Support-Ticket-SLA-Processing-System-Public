@@ -1,0 +1,18 @@
+[
+    {
+    "ticket_id": 1,
+    "note": "Ticket assigned to support agent",
+    "from_status": "new",
+    "to_status": "assigned",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-04T15:59:49.129094074+07:00"
+  },
+  {
+    "ticket_id": 1,
+    "note": "Agent started working on the ticket",
+    "from_status": "assigned",
+    "to_status": "in_progress",
+    "actor_id": "agent-003",
+    "created_at": "2026-05-04T17:59:49.129094074+07:00"
+  }
+]

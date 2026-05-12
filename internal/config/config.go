@@ -23,7 +23,7 @@ type Config struct {
 	DB             *gorm.DB
 }
 
-// LoadConfig nạp cấu hình từ file .env và môi trường
+// LoadConfig 
 func LoadConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
@@ -31,7 +31,7 @@ func LoadConfig() *Config {
 	}
 
 	cfg := &Config{
-		// Database: Ưu tiên lấy từ .env, nếu không có mới dùng default
+		// Database: Found environment variables for database configuration	
 		DBHost:     getEnv("DB_HOST"),
 		DBPort:     getEnvInt("DB_PORT"),
 		DBUser:     getEnv("DB_USER"),
@@ -84,6 +84,16 @@ func (c *Config) GetDatabase() (*gorm.DB, error) {
 func getEnv(key string) string {
 	value := os.Getenv(key)
 	return value
+}
+
+func GetPoolSize (key string) int {
+	value := os.Getenv(key)
+	intVal, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Error converting %s to integer: %v. Using default value 5", key, err)
+		return 5
+	}
+	return intVal
 }
 
 func getEnvInt(key string) int {
