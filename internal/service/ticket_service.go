@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -11,20 +12,27 @@ import (
 	"support-ticket.com/internal/repository"
 )
 
+var (
+	ErrTicketNotFound               = errors.New("ticket not found")
+	ErrEventTransitionAlreadyExists = errors.New("event transition already exists")
+)
+
 type TicketService interface {
 	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
 	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
-	UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus) error
+	UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus, actorID string, assigneeID string, note string) error
 }
 
 type ticketServiceImpl struct {
-	repo repository.TicketRepository
+	repo      repository.TicketRepository
+	eventRepo repository.TicketEventRepository
 }
 
-func NewTicketService(repo repository.TicketRepository) TicketService {
+func NewTicketService(repo repository.TicketRepository, eventRepo repository.TicketEventRepository) TicketService {
 	return &ticketServiceImpl{
-		repo: repo,
+		repo:      repo,
+		eventRepo: eventRepo,
 	}
 }
 
@@ -91,23 +99,70 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]inte
 	return tickets, nil
 }
 
-func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus) error {
+func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus, actorID string, assigneeID string, note string) error {
+	// 1. Validate input
+	if newStatus == "" || actorID == "" {
+		return fmt.Errorf("%w: status and actorID are required", domain.ErrValidation)
+	}
+
+	// 2. Lấy ticket
 	ticket, err := s.FindById(ctx, id)
 	if err != nil {
 		return err
 	}
 
+	oldStatus := ticket.Status
+
+	// 3. Không thay đổi gì nếu status giống nhau
+	if oldStatus == newStatus {
+		return nil
+	}
+
+	// 4. Validate assignee_id chỉ cho assigned
+	if assigneeID != "" && newStatus != domain.StatusAssigned {
+		return fmt.Errorf("%w: assignee_id is only allowed when transitioning to assigned", domain.ErrValidation)
+	}
+
+	if newStatus == domain.StatusAssigned {
+		if assigneeID == "" {
+			return fmt.Errorf("%w: assignee_id is required when transitioning to assigned", domain.ErrValidation)
+		}
+		ticket.AssigneeID = assigneeID
+	}
+
+	// 5. Validate và update status trên struct
 	now := time.Now()
 	if err := ticket.UpdateStatus(newStatus, now); err != nil {
 		return fmt.Errorf("domain validation failed: %w", err)
 	}
 
-	if err := ticket.Validate(); err != nil {
-		return fmt.Errorf("ticket state corrupted after status update: %w", err)
+	// 6. Check duplicate transition event
+	existingEvent, err := s.eventRepo.FindTransitionEvent(ctx, ticket.ID, oldStatus, newStatus)
+	if err != nil {
+		return fmt.Errorf("failed to check existing event: %w", err)
+	}
+	if existingEvent != nil {
+		return fmt.Errorf("%w: transition from %s to %s already exists", ErrEventTransitionAlreadyExists, oldStatus, newStatus)
 	}
 
-	if err := s.repo.UpdateTicket(ctx, ticket); err != nil {
-		return fmt.Errorf("failed to update ticket in db: %w", err)
+	// 7. Build event
+	event := &domain.TicketEvent{
+		TicketID:   ticket.ID,
+		FromStatus: oldStatus,
+		ToStatus:   newStatus,
+		ActorID:    actorID,
+		CreatedAt:  now,
+	}
+	if note != "" {
+		event.Note = &note
+	}
+	if err := event.Validate(); err != nil {
+		return fmt.Errorf("failed to validate event: %w", err)
+	}
+
+	// 8. Update ticket + insert event trong transaction
+	if err := s.repo.UpdateStatusWithEvent(ctx, ticket, event); err != nil {
+		return fmt.Errorf("failed to update ticket status with event: %w", err)
 	}
 
 	return nil
