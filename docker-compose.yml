@@ -16,7 +16,8 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
+  #TODO: need to change the default value env (example)
+  app: 
     image: ticket-sla-api
     build:
       context: .
