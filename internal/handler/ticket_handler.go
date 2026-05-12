@@ -39,7 +39,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
-		if errors.Is(err, domain.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrValidation) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -113,27 +113,21 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		return
 	}
 
-	newStatus := domain.TicketStatus(req.Status)
-
-	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), newStatus, req.ActorID, req.AssigneeID, req.Note)
+	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), req)
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
-		if errors.Is(err, service.ErrEventTransitionAlreadyExists) {
-			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-			return
-		}
-		if errors.Is(err, domain.ErrInvalidTransition) || errors.Is(err, domain.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update ticket status"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully",
-		"status": newStatus})
+		"status": req.Status})
 }
