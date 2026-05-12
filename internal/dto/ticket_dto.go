@@ -10,8 +10,7 @@ type CreateTicketReq struct {
 }
 
 type UpdateStatusReq struct {
-	Status     domain.TicketStatus `json:"status" binding:"required"`
+	Status     domain.TicketStatus `json:"status"`
 	Note       string              `json:"note"`
-	ActorID    string              `json:"actor_id" binding:"required"`
 	AssigneeID string              `json:"assignee_id"` // optional
 }
