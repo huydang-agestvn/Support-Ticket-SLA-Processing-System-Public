@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
+
 	"gorm.io/gorm"
 	"support-ticket.com/internal/domain"
 )
@@ -11,7 +13,7 @@ type TicketRepository interface {
 	Create(ctx context.Context, ticket *domain.Ticket) error
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
 	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
-	UpdateTicket(ctx context.Context, ticket *domain.Ticket) error
+	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
 }
 
 type ticketRepositoryImpl struct {
@@ -32,7 +34,7 @@ func (r *ticketRepositoryImpl) FindById(ctx context.Context, id uint) (*domain.T
 	err := r.db.WithContext(ctx).Preload("Events").First(&ticket, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil 
+			return nil, nil
 		}
 		return nil, err
 	}
@@ -62,6 +64,18 @@ func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filters map[string]i
 	return tickets, nil
 }
 
-func (r *ticketRepositoryImpl) UpdateTicket(ctx context.Context, ticket *domain.Ticket) error {
-	return r.db.WithContext(ctx).Save(ticket).Error
+func (r *ticketRepositoryImpl) UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error {
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 1. Update ticket
+		if err := tx.Save(ticket).Error; err != nil {
+			return fmt.Errorf("update ticket status: %w", err)
+		}
+
+		// 2. Insert event
+		if err := tx.Create(event).Error; err != nil {
+			return fmt.Errorf("insert ticket event: %w", err)
+		}
+
+		return nil
+	})
 }

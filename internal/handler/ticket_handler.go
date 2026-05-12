@@ -31,9 +31,19 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 		return
 	}
 
+	// Validate priority
+	if !req.Priority.IsValid() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid priority value"})
+		return
+	}
+
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create ticket"})
+		if errors.Is(err, domain.ErrValidation) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -56,7 +66,7 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch tickets"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -105,13 +115,17 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 
 	newStatus := domain.TicketStatus(req.Status)
 
-	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), newStatus)
+	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), newStatus, req.ActorID, req.AssigneeID, req.Note)
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
-		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrInvalidInput) {
+		if errors.Is(err, service.ErrEventTransitionAlreadyExists) {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		if errors.Is(err, domain.ErrInvalidTransition) || errors.Is(err, domain.ErrValidation) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -120,5 +134,6 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully",
+		"status": newStatus})
 }
