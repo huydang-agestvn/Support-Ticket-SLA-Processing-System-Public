@@ -127,7 +127,7 @@ func (t *Ticket) Validate() error {
 
 func (t *Ticket) UpdateStatus(newStatus TicketStatus, timestamp time.Time) error {
 	if t.Status == newStatus {
-		return nil
+		return fmt.Errorf("Status is already set to '%s': %w", newStatus, ErrInvalidTransition)
 	}
 	if !newStatus.IsValid() {
 		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, ErrInvalidTransition)
