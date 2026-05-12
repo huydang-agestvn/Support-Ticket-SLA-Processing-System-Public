@@ -21,3 +21,10 @@ func initDatabase(cfg *Config) (*gorm.DB, error) {
 
 	return db, nil
 }
+
+// Transaction
+// internal/db/transaction.go
+func WithTransaction(db *gorm.DB, fn func(tx *gorm.DB) error) error {
+    return db.Transaction(fn)
+}
+

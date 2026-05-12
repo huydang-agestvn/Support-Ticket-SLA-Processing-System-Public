@@ -2,33 +2,32 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"support-ticket.com/internal/domain"
 	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/repository"
-)
-
-var (
-	ErrTicketNotFound = errors.New("ticket not found")
 )
 
 type TicketService interface {
 	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
 	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
-	UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus) error
+	UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error
 }
 
 type ticketServiceImpl struct {
-	repo repository.TicketRepository
+	repo      repository.TicketRepository
+	eventRepo repository.TicketEventRepository
 }
 
-func NewTicketService(repo repository.TicketRepository) TicketService {
+func NewTicketService(repo repository.TicketRepository, eventRepo repository.TicketEventRepository) TicketService {
 	return &ticketServiceImpl{
-		repo: repo,
+		repo:      repo,
+		eventRepo: eventRepo,
 	}
 }
 
@@ -80,7 +79,7 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	}
 
 	if ticket == nil {
-		return nil, ErrTicketNotFound
+		return nil, errmsgs.ErrTicketNotFound
 	}
 
 	return ticket, nil
@@ -95,23 +94,51 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]inte
 	return tickets, nil
 }
 
-func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, newStatus domain.TicketStatus) error {
-	ticket, err := s.FindById(ctx, id)
+func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
+	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
-		return err 
+		return fmt.Errorf("failed to get ticket: %w", err)
 	}
 
-	now := time.Now()
-	if err := ticket.UpdateStatus(newStatus, now); err != nil {
-		return fmt.Errorf("domain validation failed: %w", err)
+	if ticket.Status == "new" && req.Status == "assigned" {
+		if strings.TrimSpace(req.AssigneeID) == "" {
+			return fmt.Errorf("assigneeId is required and cannot be empty when assigning a ticket")
+		}
 	}
 
-	if err := ticket.Validate(); err != nil {
-		return fmt.Errorf("ticket state corrupted after status update: %w", err)
+	if err := ticket.UpdateStatusValidate(req.Status, time.Now()); err != nil {
+		return fmt.Errorf("invalid ticket data: %w", err)
 	}
 
-	if err := s.repo.UpdateTicket(ctx, ticket); err != nil {
-		return fmt.Errorf("failed to update ticket in db: %w", err)
+	if ticket.Status == "new" && req.Status == "assigned" {
+		if strings.TrimSpace(req.AssigneeID) == "" {
+			return fmt.Errorf("assigneeId is required and cannot be empty when assigning a ticket")
+		}
+	}
+
+	ticket.AssigneeID = req.AssigneeID
+
+	// Cập nhật status mới cho ticket
+	ticket.Status = req.Status
+
+	// Build event
+	event := &domain.TicketEvent{
+		TicketID:   ticket.ID,
+		ActorID:    req.ActorID,
+		FromStatus: ticket.Status,
+		ToStatus:   req.Status,
+		CreatedAt:  time.Now(),
+	}
+	if req.Note != "" {
+		event.Note = &req.Note
+	}
+	if err := event.Validate(); err != nil {
+		return fmt.Errorf("failed to validate event: %w", err)
+	}
+
+	// 8. Update ticket + insert event trong transaction
+	if err := s.repo.UpdateStatusWithEvent(ctx, ticket, event); err != nil {
+		return fmt.Errorf("failed to update ticket status with event: %w", err)
 	}
 
 	return nil

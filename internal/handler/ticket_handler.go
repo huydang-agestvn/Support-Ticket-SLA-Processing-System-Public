@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"support-ticket.com/internal/domain"
 	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/service"
 )
 
@@ -30,9 +31,19 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 		return
 	}
 
+	// Validate priority
+	if !req.Priority.IsValid() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid priority value"})
+		return
+	}
+
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create ticket"})
+		if errors.Is(err, errmsgs.ErrValidation) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -55,7 +66,7 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch tickets"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -76,7 +87,7 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 
 	ticket, err := h.ticketService.FindById(c.Request.Context(), uint(id))
 	if err != nil {
-		if errors.Is(err, service.ErrTicketNotFound) {
+		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
@@ -102,22 +113,21 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		return
 	}
 
-	newStatus := domain.TicketStatus(req.Status)
-
-	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), newStatus)
+	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), req)
 	if err != nil {
-		if errors.Is(err, service.ErrTicketNotFound) {
+		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
 			return
 		}
-		if errors.Is(err, domain.ErrInvalidTransition) || errors.Is(err, domain.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update ticket status"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully",
+		"status": req.Status})
 }
