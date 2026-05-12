@@ -21,9 +21,15 @@ type TicketEvent struct {
 	Ticket *Ticket `json:"-" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
 }
 type BatchImportResult struct {
-	AcceptedCount  int `json:"accepted_count"`
-	RejectedCount  int `json:"rejected_count"`
-	DuplicateCount int `json:"duplicate_count"`
+	AcceptedCount   int              `json:"accepted_count"`
+	RejectedCount   int              `json:"rejected_count"`
+	DuplicateCount  int              `json:"duplicate_count"`
+	RejectedDetails []RejectedDetail `json:"rejected_details"`
+}
+
+type RejectedDetail struct {
+	ErrorName string        `json:"error_name"`
+	Events    []TicketEvent `json:"events"`
 }
 
 func (e *TicketEvent) Validate() error {

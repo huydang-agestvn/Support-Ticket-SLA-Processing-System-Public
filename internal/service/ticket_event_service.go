@@ -124,9 +124,12 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 	var ticketIDs []uint
 	var eventKeys []string
 	validEvents := make([]domain.TicketEvent, 0, len(parsedEvents))
+	rejectedEvents := make(map[string][]domain.TicketEvent)
 
 	for _, pe := range parsedEvents {
 		if pe.Err != nil {
+			key := pe.Err.Error()
+			rejectedEvents[key] = append(rejectedEvents[key], pe.Event)
 			finalResult.RejectedCount++
 			continue
 		}
@@ -135,6 +138,14 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 
 		key := fmt.Sprintf("%d|%s|%s", pe.Event.TicketID, pe.Event.FromStatus, pe.Event.ToStatus)
 		eventKeys = append(eventKeys, key)
+	}
+
+	// Convert rejectedEvents map to RejectedDetails
+	for errorName, events := range rejectedEvents {
+		finalResult.RejectedDetails = append(finalResult.RejectedDetails, domain.RejectedDetail{
+			ErrorName: errorName,
+			Events:    events,
+		})
 	}
 
 	existingTickets, err := s.ticketRepo.GetExistingTicketIDs(ctx, ticketIDs)
