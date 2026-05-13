@@ -93,7 +93,7 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]inte
 
 	return tickets, nil
 }
-
+//
 func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
 	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
@@ -110,12 +110,6 @@ func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req
 		return fmt.Errorf("invalid ticket data: %w", err)
 	}
 
-	if ticket.Status == "new" && req.Status == "assigned" {
-		if strings.TrimSpace(req.AssigneeID) == "" {
-			return fmt.Errorf("assigneeId is required and cannot be empty when assigning a ticket")
-		}
-	}
-
 	ticket.AssigneeID = req.AssigneeID
 
 	// Cập nhật status mới cho ticket
@@ -124,7 +118,7 @@ func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req
 	// Build event
 	event := &domain.TicketEvent{
 		TicketID:   ticket.ID,
-		ActorID:    req.ActorID,
+		AssigneeID: req.AssigneeID,
 		FromStatus: ticket.Status,
 		ToStatus:   req.Status,
 		CreatedAt:  time.Now(),
