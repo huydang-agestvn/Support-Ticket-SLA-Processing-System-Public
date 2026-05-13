@@ -4,7 +4,7 @@
     "note": "Ticket assigned to support agent",
     "from_status": "new",
     "to_status": "assigned",
-    "actor_id": "agent-003",
+    "assignee_id": "agent-003",
     "created_at": "2026-05-04T15:59:49.129094074+07:00"
   },
   {

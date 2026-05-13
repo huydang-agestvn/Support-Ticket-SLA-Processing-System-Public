@@ -15,6 +15,7 @@ type TicketRepository interface {
 	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
 	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
 	GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error)
+	UpdateStatusAndAssignee(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string) error
 }
 
 type ticketRepositoryImpl struct {
@@ -94,4 +95,8 @@ func (r *ticketRepositoryImpl) GetExistingTicketIDs(ctx context.Context, ticketI
 	}
 
 	return result, nil
+}
+
+func (r *ticketRepositoryImpl) UpdateStatusAndAssignee(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string) error {
+	return r.db.WithContext(ctx).Model(&domain.Ticket{}).Where("id = ?", ticketID).Updates(map[string]interface{}{"status": status, "assignee_id": assigneeID}).Error
 }

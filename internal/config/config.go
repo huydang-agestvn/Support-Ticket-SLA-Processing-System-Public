@@ -21,6 +21,7 @@ type Config struct {
 	ServerPort     int
 	WorkerPoolSize int
 	DB             *gorm.DB
+	MaxBatchSize   int
 }
 
 // LoadConfig
@@ -41,6 +42,7 @@ func LoadConfig() *Config {
 
 		ServerPort:     getEnvInt("SERVER_PORT"),
 		WorkerPoolSize: getEnvInt("WORKER_POOL_SIZE"),
+		MaxBatchSize:   getEnvInt("MAX_BATCH_SIZE"),
 	}
 
 	return cfg
@@ -87,6 +89,10 @@ func getEnv(key string) string {
 }
 
 func GetPoolSize(key string) int {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found in GetPoolSize, using system environment variables")
+	}
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
 	if err != nil {
@@ -96,6 +102,10 @@ func GetPoolSize(key string) int {
 	return intVal
 }
 func GetBatchSize(key string) int {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found in GetBatchSize, using system environment variables")
+	}
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
 	if err != nil {
