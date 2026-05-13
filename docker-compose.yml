@@ -35,6 +35,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_SSLMODE: ${DB_SSLMODE}
       WORKER_POOL_SIZE: ${WORKER_POOL_SIZE}
+      MAX_BATCH_SIZE: ${MAX_BATCH_SIZE}
     depends_on:
       postgres:
         condition: service_healthy
