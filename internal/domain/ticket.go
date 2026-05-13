@@ -121,7 +121,13 @@ func (t *Ticket) Validate() error {
 	return nil
 }
 
-func (t *Ticket) UpdateStatusValidate(newStatus TicketStatus, timestamp time.Time) error {
+func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus,asssigneeId string , timestamp time.Time) error {
+	if t.Status == StatusNew && newStatus == StatusAssigned {
+		t.AssigneeID = asssigneeId
+		if strings.TrimSpace(asssigneeId) == "" {
+			return fmt.Errorf("%w: Assignee ID is required when assigning a ticket", errmsgs.ErrInvalidInput)
+		}
+	}
 	if t.Status == newStatus {
 		return fmt.Errorf("Status is already set to '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
 	}
@@ -131,7 +137,6 @@ func (t *Ticket) UpdateStatusValidate(newStatus TicketStatus, timestamp time.Tim
 	if !t.Status.CanTransitionTo(newStatus) {
 		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, errmsgs.ErrInvalidStatusTransition)
 	}
-	t.Status = newStatus
 	t.UpdatedAt = timestamp
 	switch newStatus {
 	case StatusResolved:
