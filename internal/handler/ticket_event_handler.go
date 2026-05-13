@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"support-ticket.com/internal/errmsgs"
+	"support-ticket.com/internal/dto"
 	"support-ticket.com/internal/service"
 )
 
@@ -23,21 +23,25 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	data, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errmsgs.ErrInvalidInput})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid input",
+		})
 		return
 	}
 	defer c.Request.Body.Close()
 	result, err := h.service.Import(ctx, data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": errmsgs.ErrInvalidInput,
-			"error":   err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "import completed",
-		"data":    result,
+	c.JSON(http.StatusOK, dto.APIResponse[interface{}]{
+		Success: true,
+		Data:    result,
+		Message: "import completed",
 	})
 }
