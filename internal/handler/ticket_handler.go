@@ -45,7 +45,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
-		if errors.Is(err, errmsgs.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) {
 			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 				Success: false,
 				Error:   err.Error(),
@@ -79,20 +79,37 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 		filters["assignee_id"] = assigneeID
 	}
 
-	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+	var paging dto.PaginationQuery
+	if err := c.ShouldBindQuery(&paging); err != nil {
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   err.Error(),
+			Error:   "invalid pagination parameters: " + err.Error(),
 		})
 		return
 	}
 
-	if tickets == nil {
-		tickets = []domain.Ticket{}
+	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters, paging)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   errmsgs.ErrInternal.Error(),
+		})
+		return
 	}
-	c.JSON(http.StatusOK, dto.APIResponse[[]domain.Ticket]{
+	if tickets == nil {
+        tickets = &dto.PaginatedResult[domain.Ticket]{
+            Items: []domain.Ticket{}, 
+        }
+    } else if tickets.Items == nil {
+        tickets.Items = []domain.Ticket{} 
+    }
+	message := "Get tickets successfully"
+    if len(tickets.Items) == 0 {
+        message = "No tickets found matching the criteria"
+    }
+	c.JSON(http.StatusOK, dto.APIResponse[*dto.PaginatedResult[domain.Ticket]]{
 		Success: true,
+		Message: message,
 		Data:    tickets,
 	})
 }
@@ -104,7 +121,7 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   "invalid ticket ID format",
+			Error:   errmsgs.ErrInvalidInput.Error(),
 		})
 		return
 	}
@@ -114,13 +131,13 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
 				Success: false,
-				Error:   "ticket not found",
+				Error:   errmsgs.ErrTicketNotFound.Error(),
 			})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   "internal server error",
+			Error:   errmsgs.ErrInternal.Error() + ": " + err.Error(),
 		})
 		return
 	}
@@ -138,7 +155,7 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   "invalid ticket ID format",
+			Error:   errmsgs.ErrInvalidInput.Error(),
 		})
 		return
 	}
@@ -147,7 +164,7 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   "invalid request body: " + err.Error(),
+			Error:   errmsgs.ErrInvalidInput.Error() + ": " + err.Error(),
 		})
 		return
 	}
@@ -157,11 +174,11 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
 			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
 				Success: false,
-				Error:   "ticket not found",
+				Error:   errmsgs.ErrTicketNotFound.Error(),
 			})
 			return
 		}
-		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) {
+		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) {
 			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 				Success: false,
 				Error:   err.Error(),
@@ -171,7 +188,7 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 
 		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   err.Error(),
+			Error:   errmsgs.ErrInternal.Error() + ": " + err.Error(),
 		})
 		return
 	}
