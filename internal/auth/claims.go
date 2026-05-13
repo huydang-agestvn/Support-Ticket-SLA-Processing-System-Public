@@ -12,7 +12,7 @@ type UserPrincipal struct {
 const (
 	RoleRequestor = "requestor"
 	RoleAgent     = "agent"
-	RoleAdmin     = "admin"
+	RoleManager   = "manager"
 )
 
 type RealmAccess struct {
@@ -60,7 +60,7 @@ func (u UserPrincipal) BusinessRoles() []string {
 
 	for _, role := range u.Roles {
 		switch role {
-		case RoleRequestor, RoleAgent, RoleAdmin:
+		case RoleRequestor, RoleAgent, RoleManager:
 			roles = append(roles, role)
 		}
 	}

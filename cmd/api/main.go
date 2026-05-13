@@ -8,9 +8,14 @@ import (
 
 // @title Support Ticket SLA Processing System API
 // @version 1.0
-// @description API documentation for Support Ticket SLA Processing System.
+// @description REST API for support ticket SLA processing system.
 // @host localhost:8080
 // @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer " followed by your JWT token. Example: Bearer eyJhbGciOi...
 func main() {
 	application := app.NewApp()
 

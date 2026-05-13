@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -19,6 +20,9 @@ type ClientRequest struct {
 }
 
 func NewClient(tokenURL, clientID, clientSecret string) *ClientRequest {
+	log.Printf("NewClient tokenURL=%s", tokenURL)
+	log.Printf("NewClient clientID=%s", clientID)
+
 	return &ClientRequest{
 		tokenURL:     tokenURL,
 		clientID:     clientID,

@@ -6,8 +6,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"support-ticket.com/internal/auth"
 	"support-ticket.com/internal/config"
 	"support-ticket.com/internal/handler"
+	"support-ticket.com/internal/middleware"
 	"support-ticket.com/internal/migration"
 	"support-ticket.com/internal/repository"
 	"support-ticket.com/internal/router"
@@ -75,10 +78,36 @@ func (a *App) setupDependencies() {
 
 	ticketHandler := handler.NewTicketHandler(ticketService)
 	eventHandler := handler.NewTicketEventHandler(eventService)
-	reportHandler := handler.NewReportHandler(reportService)
+	reportHander := handler.NewReportHandler(reportService)
+
+	//Auth: Login Keycloak third service
+	keycloakClient := service.NewClient(
+		a.cfg.KeycloakTokenURL,
+		a.cfg.KeycloakClientID,
+		a.cfg.KeycloakClientSecret,
+	)
+
+	authService := service.NewAuthService(keycloakClient)
+	authHandler := handler.NewAuthHandler(authService)
+
+	// Auth middleware: dùng để verify access token
+	authenticator := auth.NewKeycloakAuthenticator(
+		a.cfg.KeycloakIssuer,
+		a.cfg.KeycloakClientID,
+		a.cfg.KeycloakJWKSURL,
+	)
+
+	authMiddleware := middleware.NewAuthMiddleware(authenticator)
 
 	r := gin.New()
-	a.router = router.InitRouter(r, eventHandler, ticketHandler, reportHandler)
+	a.router = router.InitRouter(
+		r,
+		authHandler,
+		eventHandler,
+		ticketHandler,
+		authMiddleware,
+		reportHander,
+	)
 }
 
 func (a *App) startServer() error {

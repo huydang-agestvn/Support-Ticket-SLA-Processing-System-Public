@@ -44,6 +44,13 @@ definitions:
     - requestor_id
     - title
     type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   dto.UpdateStatusReq:
     properties:
       assignee_id:
@@ -60,6 +67,39 @@ info:
   title: Support Ticket SLA Processing System API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with username and password through Keycloak
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid username or password
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login
+      tags:
+      - Auth
   /ticket-events/import:
     post:
       consumes:

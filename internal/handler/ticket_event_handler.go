@@ -28,6 +28,7 @@ func NewTicketEventHandler(service service.TicketEventService) *TicketEventHandl
 // @Tags ticket-events
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param request body map[string]interface{} true "Import ticket events request"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}

@@ -1,8 +1,10 @@
 package middleware
+
 import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"support-ticket.com/internal/auth"
 )
 
@@ -16,34 +18,76 @@ func NewAuthMiddleware(authenticator *auth.KeycloakAuthenticator) *AuthMiddlewar
 	}
 }
 
-func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
+func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			http.Error(w, "missing authorization header", http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "missing authorization header",
+			})
+			c.Abort()
 			return
 		}
 
 		const bearerPrefix = "Bearer "
 		if !strings.HasPrefix(authHeader, bearerPrefix) {
-			http.Error(w, "invalid authorization header format", http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "invalid authorization header format",
+			})
+			c.Abort()
 			return
 		}
 
 		tokenString := strings.TrimSpace(strings.TrimPrefix(authHeader, bearerPrefix))
 		if tokenString == "" {
-			http.Error(w, "missing bearer token", http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "missing bearer token",
+			})
+			c.Abort()
 			return
 		}
 
 		currentUser, err := m.authenticator.VerifyToken(tokenString)
 		if err != nil {
-			http.Error(w, "invalid token: "+err.Error(), http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "invalid token: " + err.Error(),
+			})
+			c.Abort()
 			return
 		}
 
-		ctx := auth.WithUser(r.Context(), currentUser)
+		ctx := auth.WithUser(c.Request.Context(), currentUser)
+		c.Request = c.Request.WithContext(ctx)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+		c.Next()
+	}
+}
+
+func (m *AuthMiddleware) RequireRole(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		currentUser, ok := auth.UserFromContext(c.Request.Context())
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error":   "unauthenticated",
+			})
+			c.Abort()
+			return
+		}
+
+		if !currentUser.HasAnyRole(allowedRoles...) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"error":   "forbidden: insufficient role",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
 }
