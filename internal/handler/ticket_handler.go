@@ -23,15 +23,15 @@ func NewTicketHandler(s service.TicketService) *TicketHandler {
 }
 
 // HandleCreateTicket godoc
-// @Summary Create ticket
-// @Description Create a new support ticket
-// @Tags tickets
+// @Summary Create a new ticket
+// @Description Create a new support ticket with title, description, requestor, assignee and priority.
+// @Tags Tickets
 // @Accept json
 // @Produce json
-// @Param request body map[string]interface{} true "Create ticket request"
-// @Success 201 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Param request body dto.CreateTicketReq true "Create ticket request"
+// @Success 201 {object} map[string]interface{} "Ticket created successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid request body or invalid priority"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /tickets [post]
 func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 	var req dto.CreateTicketReq
@@ -77,13 +77,14 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 // HandleListTickets godoc
 // @Summary List tickets
-// @Description Get list of support tickets
-// @Tags tickets
+// @Description Get a list of support tickets with optional filters by status, priority and assignee ID.
+// @Tags Tickets
 // @Produce json
-// @Param status query string false "Ticket status"
-// @Param priority query string false "Ticket priority"
-// @Success 200 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Param status query string false "Filter by ticket status" Enums(new, assigned, in_progress, resolved, closed, cancelled)
+// @Param priority query string false "Filter by ticket priority" Enums(low, medium, high, urgent)
+// @Param assignee_id query string false "Filter by assignee ID"
+// @Success 200 {object} map[string]interface{} "List tickets successfully"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /tickets [get]
 func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 	filters := map[string]interface{}{}
@@ -118,13 +119,14 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 // HandleGetTicket godoc
 // @Summary Get ticket detail
-// @Description Get ticket detail by ticket ID
-// @Tags tickets
+// @Description Get support ticket detail by ticket ID.
+// @Tags Tickets
 // @Produce json
 // @Param id path int true "Ticket ID"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Success 200 {object} map[string]interface{} "Get ticket detail successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid ticket ID format"
+// @Failure 404 {object} map[string]interface{} "Ticket not found"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /tickets/{id} [get]
 func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	idStr := c.Param("id")
@@ -161,15 +163,16 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 
 // HandleUpdateStatus godoc
 // @Summary Update ticket status
-// @Description Update ticket status by ticket ID
-// @Tags tickets
+// @Description Update support ticket status by ticket ID. The status transition must follow the required ticket status flow.
+// @Tags Tickets
 // @Accept json
 // @Produce json
 // @Param id path int true "Ticket ID"
-// @Param request body map[string]interface{} true "Update status request"
-// @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Param request body dto.UpdateStatusReq true "Update ticket status request"
+// @Success 200 {object} map[string]interface{} "Ticket status updated successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid request body, invalid ticket ID or invalid status transition"
+// @Failure 404 {object} map[string]interface{} "Ticket not found"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
 // @Router /tickets/{id}/status [patch]
 func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	idStr := c.Param("id")
