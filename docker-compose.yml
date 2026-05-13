@@ -1,54 +1,39 @@
-# TODO: Setup Docker in Week 6
-# For now, use local PostgreSQL development setup
-
-# To run PostgreSQL locally on macOS (using Homebrew):
-#   brew install postgresql
-#   brew services start postgresql
-#   createdb ticket_sla
-#
-# Or using Docker for just PostgreSQL:
-#   docker run --name ticket-db -e POSTGRES_DB=ticket_sla -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:16-alpine
-#
-# Then run: go run ./cmd/api/main.go
-
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: ticket-sla-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ticket_sla
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5433:5432"
+      - "${POSTGRES_HOST_PORT}:${POSTGRES_CONTAINER_PORT}"
     volumes:
       - ticket_sla_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ticket_sla"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  #TODO: need to change the default value env (example)
-  app: 
+  app:
     image: ticket-sla-api
     build:
       context: .
       dockerfile: Dockerfile
     container_name: ticket-sla-api
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${SERVER_PORT}"
     environment:
-      APP_PORT: 8080
-      SERVER_PORT: 8080
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: ticket_sla
-      DB_SSLMODE: disable
-      WORKER_POOL_SIZE: 5
+      APP_PORT: ${APP_PORT}
+      SERVER_PORT: ${SERVER_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SSLMODE: ${DB_SSLMODE}
+      WORKER_POOL_SIZE: ${WORKER_POOL_SIZE}
     depends_on:
       postgres:
         condition: service_healthy
