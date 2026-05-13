@@ -37,27 +37,42 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 	var req dto.CreateTicketReq
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid request body: " + err.Error(),
+		})
 		return
 	}
 
 	// Validate priority
 	if !req.Priority.IsValid() {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid priority value"})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid priority value",
+		})
 		return
 	}
 
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrValidation) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+				Success: false,
+				Error:   err.Error(),
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": ticket})
+	c.JSON(http.StatusCreated, dto.APIResponse[*domain.Ticket]{
+		Success: true,
+		Data:    ticket,
+	})
 }
 
 // HandleListTickets godoc
@@ -85,14 +100,20 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   err.Error(),
+		})
 		return
 	}
 
 	if tickets == nil {
 		tickets = []domain.Ticket{}
 	}
-	c.JSON(http.StatusOK, gin.H{"data": tickets})
+	c.JSON(http.StatusOK, dto.APIResponse[[]domain.Ticket]{
+		Success: true,
+		Data:    tickets,
+	})
 }
 
 // HandleGetTicket godoc
@@ -109,21 +130,33 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket ID format"})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid ticket ID format",
+		})
 		return
 	}
 
 	ticket, err := h.ticketService.FindById(c.Request.Context(), uint(id))
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
+			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
+				Success: false,
+				Error:   "ticket not found",
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "internal server error",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": ticket})
+	c.JSON(http.StatusOK, dto.APIResponse[*domain.Ticket]{
+		Success: true,
+		Data:    ticket,
+	})
 }
 
 // HandleUpdateStatus godoc
@@ -142,31 +175,48 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket ID format"})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid ticket ID format",
+		})
 		return
 	}
 
 	var req dto.UpdateStatusReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   "invalid request body: " + err.Error(),
+		})
 		return
 	}
 
 	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), req)
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrTicketNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
+			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
+				Success: false,
+				Error:   "ticket not found",
+			})
 			return
 		}
 		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+				Success: false,
+				Error:   err.Error(),
+			})
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ticket status updated successfully",
-		"status": req.Status})
+	c.JSON(http.StatusOK, dto.APIResponse[interface{}]{
+		Success: true,
+		Message: "ticket status updated successfully",
+	})
 }
