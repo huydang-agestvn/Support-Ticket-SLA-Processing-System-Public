@@ -1,4 +1,58 @@
 basePath: /api/v1
+definitions:
+  domain.Priority:
+    enum:
+    - low
+    - medium
+    - high
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+  domain.TicketStatus:
+    enum:
+    - new
+    - assigned
+    - in_progress
+    - resolved
+    - closed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - StatusNew
+    - StatusAssigned
+    - StatusInProgress
+    - StatusResolved
+    - StatusClosed
+    - StatusCancelled
+  dto.CreateTicketReq:
+    properties:
+      description:
+        maxLength: 5000
+        type: string
+      priority:
+        $ref: '#/definitions/domain.Priority'
+      requestor_id:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 5
+        type: string
+    required:
+    - priority
+    - requestor_id
+    - title
+    type: object
+  dto.UpdateStatusReq:
+    properties:
+      assignee_id:
+        type: string
+      note:
+        type: string
+      status:
+        $ref: '#/definitions/domain.TicketStatus'
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -42,68 +96,85 @@ paths:
       - ticket-events
   /tickets:
     get:
-      description: Get list of support tickets
+      description: Get a list of support tickets with optional filters by status,
+        priority and assignee ID.
       parameters:
-      - description: Ticket status
+      - description: Filter by ticket status
+        enum:
+        - new
+        - assigned
+        - in_progress
+        - resolved
+        - closed
+        - cancelled
         in: query
         name: status
         type: string
-      - description: Ticket priority
+      - description: Filter by ticket priority
+        enum:
+        - low
+        - medium
+        - high
+        - urgent
         in: query
         name: priority
+        type: string
+      - description: Filter by assignee ID
+        in: query
+        name: assignee_id
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: List tickets successfully
           schema:
             additionalProperties: true
             type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
       summary: List tickets
       tags:
-      - tickets
+      - Tickets
     post:
       consumes:
       - application/json
-      description: Create a new support ticket
+      description: Create a new support ticket with title, description, requestor,
+        assignee and priority.
       parameters:
       - description: Create ticket request
         in: body
         name: request
         required: true
         schema:
-          additionalProperties: true
-          type: object
+          $ref: '#/definitions/dto.CreateTicketReq'
       produces:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Ticket created successfully
           schema:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid request body or invalid priority
           schema:
             additionalProperties: true
             type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
-      summary: Create ticket
+      summary: Create a new ticket
       tags:
-      - tickets
+      - Tickets
   /tickets/{id}:
     get:
-      description: Get ticket detail by ticket ID
+      description: Get support ticket detail by ticket ID.
       parameters:
       - description: Ticket ID
         in: path
@@ -114,60 +185,70 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Get ticket detail successfully
           schema:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid ticket ID format
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Ticket not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
       summary: Get ticket detail
       tags:
-      - tickets
+      - Tickets
   /tickets/{id}/status:
     patch:
       consumes:
       - application/json
-      description: Update ticket status by ticket ID
+      description: Update support ticket status by ticket ID. The status transition
+        must follow the required ticket status flow.
       parameters:
       - description: Ticket ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Update status request
+      - description: Update ticket status request
         in: body
         name: request
         required: true
         schema:
-          additionalProperties: true
-          type: object
+          $ref: '#/definitions/dto.UpdateStatusReq'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Ticket status updated successfully
           schema:
             additionalProperties: true
             type: object
         "400":
-          description: Bad Request
+          description: Invalid request body, invalid ticket ID or invalid status transition
           schema:
             additionalProperties: true
             type: object
         "404":
-          description: Not Found
+          description: Ticket not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
           schema:
             additionalProperties: true
             type: object
       summary: Update ticket status
       tags:
-      - tickets
+      - Tickets
 swagger: "2.0"

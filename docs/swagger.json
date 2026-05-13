@@ -61,38 +61,58 @@
         },
         "/tickets": {
             "get": {
-                "description": "Get list of support tickets",
+                "description": "Get a list of support tickets with optional filters by status, priority and assignee ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "tickets"
+                    "Tickets"
                 ],
                 "summary": "List tickets",
                 "parameters": [
                     {
+                        "enum": [
+                            "new",
+                            "assigned",
+                            "in_progress",
+                            "resolved",
+                            "closed",
+                            "cancelled"
+                        ],
                         "type": "string",
-                        "description": "Ticket status",
+                        "description": "Filter by ticket status",
                         "name": "status",
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "low",
+                            "medium",
+                            "high",
+                            "urgent"
+                        ],
                         "type": "string",
-                        "description": "Ticket priority",
+                        "description": "Filter by ticket priority",
                         "name": "priority",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by assignee ID",
+                        "name": "assignee_id",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "List tickets successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -101,7 +121,7 @@
                 }
             },
             "post": {
-                "description": "Create a new support ticket",
+                "description": "Create a new support ticket with title, description, requestor, assignee and priority.",
                 "consumes": [
                     "application/json"
                 ],
@@ -109,9 +129,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "tickets"
+                    "Tickets"
                 ],
-                "summary": "Create ticket",
+                "summary": "Create a new ticket",
                 "parameters": [
                     {
                         "description": "Create ticket request",
@@ -119,28 +139,27 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.CreateTicketReq"
                         }
                     }
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Ticket created successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body or invalid priority",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -151,12 +170,12 @@
         },
         "/tickets/{id}": {
             "get": {
-                "description": "Get ticket detail by ticket ID",
+                "description": "Get support ticket detail by ticket ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "tickets"
+                    "Tickets"
                 ],
                 "summary": "Get ticket detail",
                 "parameters": [
@@ -170,21 +189,28 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Get ticket detail successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid ticket ID format",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Ticket not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -195,7 +221,7 @@
         },
         "/tickets/{id}/status": {
             "patch": {
-                "description": "Update ticket status by ticket ID",
+                "description": "Update support ticket status by ticket ID. The status transition must follow the required ticket status flow.",
                 "consumes": [
                     "application/json"
                 ],
@@ -203,7 +229,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "tickets"
+                    "Tickets"
                 ],
                 "summary": "Update ticket status",
                 "parameters": [
@@ -215,38 +241,117 @@
                         "required": true
                     },
                     {
-                        "description": "Update status request",
+                        "description": "Update ticket status request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/dto.UpdateStatusReq"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Ticket status updated successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body, invalid ticket ID or invalid status transition",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "Ticket not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.Priority": {
+            "type": "string",
+            "enum": [
+                "low",
+                "medium",
+                "high"
+            ],
+            "x-enum-varnames": [
+                "PriorityLow",
+                "PriorityMedium",
+                "PriorityHigh"
+            ]
+        },
+        "domain.TicketStatus": {
+            "type": "string",
+            "enum": [
+                "new",
+                "assigned",
+                "in_progress",
+                "resolved",
+                "closed",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "StatusNew",
+                "StatusAssigned",
+                "StatusInProgress",
+                "StatusResolved",
+                "StatusClosed",
+                "StatusCancelled"
+            ]
+        },
+        "dto.CreateTicketReq": {
+            "type": "object",
+            "required": [
+                "priority",
+                "requestor_id",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                },
+                "priority": {
+                    "$ref": "#/definitions/domain.Priority"
+                },
+                "requestor_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 5
+                }
+            }
+        },
+        "dto.UpdateStatusReq": {
+            "type": "object",
+            "properties": {
+                "assignee_id": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/domain.TicketStatus"
                 }
             }
         }
