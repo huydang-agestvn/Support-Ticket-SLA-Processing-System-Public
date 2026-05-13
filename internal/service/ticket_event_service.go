@@ -29,6 +29,12 @@ func NewTicketEventService(eventRepo repository.TicketEventRepository, ticketRep
 	}
 }
 
+type updateJob struct {
+	TicketID   uint
+	Status     domain.TicketStatus
+	AssigneeID string
+}
+
 type workerOutput struct {
 	Event  domain.TicketEvent
 	Status EventResult
@@ -42,12 +48,12 @@ const (
 	ResultDuplicate EventResult = "duplicate"
 )
 
-var maxBatchSize = config.GetBatchSize("WORKER_BATCH_SIZE")
+var maxBatchSize = config.GetBatchSize("MAX_BATCH_SIZE")
 
 func (s *ticketEventService) processEvent(
 	event *domain.TicketEvent,
-	existingTickets map[uint]bool, 
-	existingDBEvents map[string]bool, 
+	existingTickets map[uint]bool,
+	existingDBEvents map[string]bool,
 	localSeen map[string]bool,
 	mu *sync.Mutex,
 ) (EventResult, error) {
@@ -73,7 +79,6 @@ func (s *ticketEventService) processEvent(
 	if isDupLocal {
 		return ResultDuplicate, nil
 	}
-
 
 	return ResultAccepted, nil
 }
@@ -105,7 +110,7 @@ func (s *ticketEventService) parseEvents(data []byte) ([]parsedEvent, error) {
 	for i, e := range events {
 		parsed[i] = parsedEvent{
 			Event: e,
-			Err:   e.Validate(), 
+			Err:   e.Validate(),
 		}
 	}
 	return parsed, nil
@@ -182,6 +187,34 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 	if len(eventsToInsert) > 0 {
 		if err := s.eventRepo.CreateBatch(eventsToInsert); err != nil {
 			return finalResult, err
+		}
+
+		// Sync ticket status after successful batch insert
+		uniqueTicketIDs := make(map[uint]bool)
+		for _, event := range eventsToInsert {
+			uniqueTicketIDs[event.TicketID] = true
+		}
+		if len(uniqueTicketIDs) > 0 {
+			ticketIDsInt := make([]int, 0, len(uniqueTicketIDs))
+			for id := range uniqueTicketIDs {
+				ticketIDsInt = append(ticketIDsInt, int(id))
+			}
+			latestEvents, err := s.eventRepo.FetchLatestEventPerTicket(ctx, ticketIDsInt)
+			if err != nil {
+				return finalResult, fmt.Errorf("failed to sync ticket status: %w", err)
+			}
+			jobs := make([]updateJob, 0, len(latestEvents))
+			for _, ev := range latestEvents {
+				jobs = append(jobs, updateJob{TicketID: uint(ev.TicketID), Status: ev.ToStatus, AssigneeID: ev.AssigneeID})
+			}
+			results := worker.Run(jobs, func(job updateJob) error {
+				return s.ticketRepo.UpdateStatusAndAssignee(ctx, job.TicketID, job.Status, job.AssigneeID)
+			})
+			for _, err := range results {
+				if err != nil {
+					return finalResult, fmt.Errorf("failed to update ticket status: %w", err)
+				}
+			}
 		}
 	}
 
