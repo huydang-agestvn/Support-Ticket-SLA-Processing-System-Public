@@ -46,26 +46,23 @@ var maxBatchSize = config.GetBatchSize("WORKER_BATCH_SIZE")
 
 func (s *ticketEventService) processEvent(
 	event *domain.TicketEvent,
-	existingTickets map[uint]bool, // Cache từ DB
-	existingDBEvents map[string]bool, // Cache từ DB
-	localSeen map[string]bool, // Trạng thái của current batch
+	existingTickets map[uint]bool, 
+	existingDBEvents map[string]bool, 
+	localSeen map[string]bool,
 	mu *sync.Mutex,
 ) (EventResult, error) {
 
-	// 1. Validate Business Logic (DB level)
-	// Kiểm tra xem Ticket có thực sự tồn tại dưới DB không
+	// Validate Business Logic (DB level)
 	if !existingTickets[event.TicketID] {
 		return ResultRejected, fmt.Errorf("ticket_id %d does not exist in DB", event.TicketID)
 	}
 
 	key := fmt.Sprintf("%d|%s|%s", event.TicketID, event.FromStatus, event.ToStatus)
 
-	// 2. Kiểm tra Duplicate với DB (Những lần import trước đó)
 	if existingDBEvents[key] {
 		return ResultDuplicate, nil
 	}
 
-	// 3. Kiểm tra Duplicate trong chính batch đang xử lý (Concurrency safe)
 	mu.Lock()
 	isDupLocal := localSeen[key]
 	if !isDupLocal {
@@ -77,7 +74,6 @@ func (s *ticketEventService) processEvent(
 		return ResultDuplicate, nil
 	}
 
-	// Logic e.Validate() đã chạy ở vòng parseEvents rồi, không cần chạy lại ở đây nữa
 
 	return ResultAccepted, nil
 }
@@ -109,7 +105,7 @@ func (s *ticketEventService) parseEvents(data []byte) ([]parsedEvent, error) {
 	for i, e := range events {
 		parsed[i] = parsedEvent{
 			Event: e,
-			Err:   e.Validate(), // nil nếu valid
+			Err:   e.Validate(), 
 		}
 	}
 	return parsed, nil

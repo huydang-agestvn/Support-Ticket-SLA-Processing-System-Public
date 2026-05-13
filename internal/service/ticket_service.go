@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"support-ticket.com/internal/domain"
@@ -93,32 +92,21 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]inte
 
 	return tickets, nil
 }
-//
+
 func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
 	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to get ticket: %w", err)
 	}
 
-	if ticket.Status == "new" && req.Status == "assigned" {
-		if strings.TrimSpace(req.AssigneeID) == "" {
-			return fmt.Errorf("assigneeId is required and cannot be empty when assigning a ticket")
-		}
-	}
-
-	if err := ticket.UpdateStatusValidate(req.Status, time.Now()); err != nil {
+	if err := ticket.ValidateStatusTransition(req.Status, req.AssigneeID, time.Now()); err != nil {
 		return fmt.Errorf("invalid ticket data: %w", err)
 	}
-
-	ticket.AssigneeID = req.AssigneeID
-
-	// Cập nhật status mới cho ticket
-	ticket.Status = req.Status
 
 	// Build event
 	event := &domain.TicketEvent{
 		TicketID:   ticket.ID,
-		AssigneeID: req.AssigneeID,
+		AssigneeID: ticket.AssigneeID,
 		FromStatus: ticket.Status,
 		ToStatus:   req.Status,
 		CreatedAt:  time.Now(),
