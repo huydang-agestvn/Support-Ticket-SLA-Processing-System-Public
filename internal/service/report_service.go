@@ -21,7 +21,6 @@ func NewReportService(repo repository.ReportRepository) ReportService {
 	return &reportService{repo: repo}
 }
 
-// GenerateReport chạy aggregate từ tickets, ghi vào daily_ticket_reports
 func (s *reportService) GenerateReport(date time.Time) (*domain.TicketReport, error) {
 	report, err := s.repo.AggregateByDate(date)
 	if err != nil {
@@ -35,7 +34,6 @@ func (s *reportService) GenerateReport(date time.Time) (*domain.TicketReport, er
 	return report, nil
 }
 
-// GetReport đọc report đã được generate từ daily_ticket_reports
 func (s *reportService) GetReport(date time.Time) (*domain.TicketReport, error) {
 	report, err := s.repo.GetByDate(date)
 	if err != nil {

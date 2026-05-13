@@ -67,15 +67,18 @@ func (a *App) initDB() error {
 func (a *App) setupDependencies() {
 	ticketRepo := repository.NewTicketRepository(a.db)
 	eventRepo := repository.NewTicketEventRepository(a.db)
+	reportRepo := repository.NewReportRepository(a.db)
 
 	ticketService := service.NewTicketService(ticketRepo, eventRepo)
 	eventService := service.NewTicketEventService(eventRepo, ticketRepo)
+	reportService := service.NewReportService(reportRepo)
 
 	ticketHandler := handler.NewTicketHandler(ticketService)
 	eventHandler := handler.NewTicketEventHandler(eventService)
+	reportHandler := handler.NewReportHandler(reportService)
 
 	r := gin.New()
-	a.router = router.InitRouter(r, eventHandler, ticketHandler)
+	a.router = router.InitRouter(r, eventHandler, ticketHandler, reportHandler)
 }
 
 func (a *App) startServer() error {
