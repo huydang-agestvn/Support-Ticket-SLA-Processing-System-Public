@@ -12,7 +12,7 @@ import (
 type TicketRepository interface {
 	Create(ctx context.Context, ticket *domain.Ticket) error
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
+	FindAll(ctx context.Context, filters map[string]interface{}, offset int, limit int) ([]domain.Ticket, int64, error)
 	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
 	GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error)
 	UpdateStatusAndAssignee(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string) error
@@ -44,9 +44,11 @@ func (r *ticketRepositoryImpl) FindById(ctx context.Context, id uint) (*domain.T
 	return &ticket, nil
 }
 
-func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error) {
+func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filters map[string]interface{}, offset, limit int) ([]domain.Ticket, int64, error) {
 	var tickets []domain.Ticket
-	query := r.db.WithContext(ctx)
+	var total int64
+
+	query := r.db.WithContext(ctx).Model(&domain.Ticket{})
 
 	if status, ok := filters["status"]; ok && status != "" {
 		query = query.Where("status = ?", status)
@@ -57,13 +59,23 @@ func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filters map[string]i
 	if assigneeID, ok := filters["assignee_id"]; ok && assigneeID != "" {
 		query = query.Where("assignee_id = ?", assigneeID)
 	}
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	if total == 0 {
+		return []domain.Ticket{}, 0, nil
+	}
+	err := query.Preload("Events").
+		Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&tickets).Error
 
-	err := query.Preload("Events").Order("created_at DESC").Find(&tickets).Error
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return tickets, nil
+	return tickets, total, nil
 }
 
 func (r *ticketRepositoryImpl) UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error {
