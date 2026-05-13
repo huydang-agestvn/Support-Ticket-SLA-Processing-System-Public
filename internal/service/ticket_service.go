@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"time"
 
 	"support-ticket.com/internal/domain"
@@ -14,7 +15,7 @@ import (
 type TicketService interface {
 	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
+	FindAll(ctx context.Context, filters map[string]interface{}, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
 	UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error
 }
 
@@ -84,23 +85,40 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	return ticket, nil
 }
 
-func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error) {
-	tickets, err := s.repo.FindAll(ctx, filters)
+func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]interface{}, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
+	limit := paging.GetLimit()
+	offset := paging.GetOffset()
+	page := paging.GetPage()
+
+	tickets, total, err := s.repo.FindAll(ctx, filters, offset, limit)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list tickets: %w", err)
+		return nil, fmt.Errorf("Failed to list tickets: %w", err)
+	}
+	if tickets == nil {
+		tickets = []domain.Ticket{}
 	}
 
-	return tickets, nil
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	result := &dto.PaginatedResult[domain.Ticket]{
+		Items:      tickets,
+		Total:      total,
+		Page:       page,
+		Limit:      limit,
+		TotalPages: totalPages,
+	}
+
+	return result, nil
 }
 
 func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
 	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get ticket: %w", err)
+		return fmt.Errorf("Failed to get ticket: %w", err)
 	}
 
 	if err := ticket.ValidateStatusTransition(req.Status, req.AssigneeID, time.Now()); err != nil {
-		return fmt.Errorf("invalid ticket data: %w", err)
+		return fmt.Errorf("%w", err)
 	}
 
 	// Build event
@@ -115,12 +133,13 @@ func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req
 		event.Note = &req.Note
 	}
 	if err := event.Validate(); err != nil {
-		return fmt.Errorf("failed to validate event: %w", err)
+		return fmt.Errorf("Failed to validate event: %w", err)
 	}
 
+	ticket.Status = req.Status
 	// 8. Update ticket + insert event trong transaction
 	if err := s.repo.UpdateStatusWithEvent(ctx, ticket, event); err != nil {
-		return fmt.Errorf("failed to update ticket status with event: %w", err)
+		return fmt.Errorf("Failed to update ticket status with event: %w", err)
 	}
 
 	return nil

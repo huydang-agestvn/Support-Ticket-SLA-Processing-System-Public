@@ -121,22 +121,29 @@ func (t *Ticket) Validate() error {
 	return nil
 }
 
-func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus,asssigneeId string , timestamp time.Time) error {
+func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId string, timestamp time.Time) error {
+	reqAssigneeId = strings.TrimSpace(reqAssigneeId)
+
 	if t.Status == StatusNew && newStatus == StatusAssigned {
-		t.AssigneeID = asssigneeId
-		if strings.TrimSpace(asssigneeId) == "" {
+		if reqAssigneeId == "" {
 			return fmt.Errorf("%w: Assignee ID is required when assigning a ticket", errmsgs.ErrInvalidInput)
 		}
+		t.AssigneeID = reqAssigneeId
+	} else if reqAssigneeId != "" && reqAssigneeId != t.AssigneeID {
+		return fmt.Errorf("%w: Cannot change assignee to '%s' during status transition to '%s'. Current assignee is '%s'",
+			errmsgs.ErrInvalidInput, reqAssigneeId, newStatus, t.AssigneeID)
 	}
+
 	if t.Status == newStatus {
-		return fmt.Errorf("Status is already set to '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Status is already set to '%s'", errmsgs.ErrInvalidStatusTransition, newStatus)
 	}
 	if !newStatus.IsValid() {
-		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Cannot transition to unknown status '%s'", errmsgs.ErrInvalidStatusTransition, newStatus)
 	}
 	if !t.Status.CanTransitionTo(newStatus) {
-		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Cannot transition from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, t.Status, newStatus)
 	}
+
 	t.UpdatedAt = timestamp
 	switch newStatus {
 	case StatusResolved:
