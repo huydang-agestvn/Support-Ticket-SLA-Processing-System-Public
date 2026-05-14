@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -55,7 +56,6 @@ func (c *Config) GetDSN() string {
 	)
 }
 
-// Giữ nguyên hàm GetDatabase và các helper của bạn...
 func (c *Config) GetDatabase() (*gorm.DB, error) {
 	if c.DB != nil {
 		return c.DB, nil
@@ -67,8 +67,7 @@ func (c *Config) GetDatabase() (*gorm.DB, error) {
 	retryDelay := time.Second
 
 	for i := 0; i < maxRetries; i++ {
-		// Lưu ý: Bạn cần đảm bảo hàm initDatabase(c) đã được định nghĩa ở file khác trong package config
-		db, err = initDatabase(c)
+		db, err = gorm.Open(postgres.Open(c.GetDSN()), &gorm.Config{})
 		if err == nil {
 			c.DB = db
 			return db, nil
