@@ -35,10 +35,8 @@ type Ticket struct {
 	Priority    Priority     `json:"priority" gorm:"column:priority;type:varchar(20);not null"`
 	Status      TicketStatus `json:"status" gorm:"column:status;type:varchar(20);not null"`
 	CreatedAt   time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
-	UpdatedAt   time.Time    `json:"updated_at" gorm:"column:updated_at"`
 	ResolvedAt  *time.Time   `json:"resolved_at" gorm:"column:resolved_at"`
 	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
-	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
 
 	// TODO:Relations
 	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
@@ -144,12 +142,9 @@ func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId 
 		return fmt.Errorf("%w: Cannot transition from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, t.Status, newStatus)
 	}
 
-	t.UpdatedAt = timestamp
 	switch newStatus {
 	case StatusResolved:
 		t.ResolvedAt = &timestamp
-	case StatusCancelled:
-		t.CancelledAt = &timestamp
 	}
 	return nil
 }
