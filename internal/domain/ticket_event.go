@@ -32,6 +32,13 @@ type RejectedDetail struct {
 }
 
 func (e *TicketEvent) Validate() error {
+	if e.TicketID == 0 {
+		return fmt.Errorf("%w: Ticket ID is required", errmsgs.ErrInvalidInput)
+	}
+	if e.AssigneeID == ""` {
+		return fmt.Errorf("%w: Assignee ID is required", errmsgs.ErrInvalidInput)
+	}
+	
 	if !e.FromStatus.IsValid() {
 		return fmt.Errorf("%w: Unknown From Status '%s'", errmsgs.ErrInvalidInput, e.FromStatus)
 	}
