@@ -37,6 +37,7 @@ type Ticket struct {
 	CreatedAt   time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
 	ResolvedAt  *time.Time   `json:"resolved_at" gorm:"column:resolved_at"`
 	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
+	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
 
 	// TODO:Relations
 	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
@@ -116,6 +117,14 @@ func (t *Ticket) Validate() error {
 			return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
 		}
 	}
+	if t.Status == StatusCancelled {
+		if t.CancelledAt == nil || t.CancelledAt.IsZero() {
+			return fmt.Errorf("%w: Cancelled At is required when status is cancelled", errmsgs.ErrInvalidInput)
+		}
+		if t.CancelledAt.Before(t.CreatedAt) {
+			return fmt.Errorf("%w: Cancelled At cannot be before Created At", errmsgs.ErrInvalidInput)
+		}
+	}
 	return nil
 }
 
@@ -145,6 +154,34 @@ func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId 
 	switch newStatus {
 	case StatusResolved:
 		t.ResolvedAt = &timestamp
+		if err := t.ValidateResolvedAt(t.CreatedAt); err != nil {
+			return err
+		}
+	case StatusCancelled:
+		t.CancelledAt = &timestamp
+		if err := t.ValidateCancelledAt(t.CreatedAt); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (t *Ticket) ValidateResolvedAt(createdAt time.Time) error {
+	if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
+		return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
+	}
+	if t.ResolvedAt.Before(createdAt) {
+		return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
+	}
+	return nil
+}
+
+func (t *Ticket) ValidateCancelledAt(createdAt time.Time) error {
+	if t.CancelledAt == nil || t.CancelledAt.IsZero() {
+		return fmt.Errorf("%w: Cancelled At is required when status is cancelled", errmsgs.ErrInvalidInput)
+	}
+	if t.CancelledAt.Before(createdAt) {
+		return fmt.Errorf("%w: Cancelled At cannot be before Created At", errmsgs.ErrInvalidInput)
 	}
 	return nil
 }
