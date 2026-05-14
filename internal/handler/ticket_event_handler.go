@@ -39,9 +39,10 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 		return
 	}
 
+	response := dto.NewTicketImportResponse(result)
 	c.JSON(http.StatusOK, dto.APIResponse[interface{}]{
 		Success: true,
-		Data:    result,
+		Data:    response,
 		Message: "import completed",
 	})
 }
