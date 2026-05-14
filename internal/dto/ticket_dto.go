@@ -14,3 +14,9 @@ type UpdateStatusReq struct {
 	Status     domain.TicketStatus `json:"status"`
 	Note       string              `json:"note"`
 }
+
+type TicketFilter struct {
+	Status     string `form:"status" binding:"omitempty,oneof=new assigned in_progress resolved closed canceled"`
+	Priority   string `form:"priority" binding:"omitempty,oneof=low medium high"`
+	AssigneeID string `form:"assignee_id" binding:"omitempty,min=1"`
+}
