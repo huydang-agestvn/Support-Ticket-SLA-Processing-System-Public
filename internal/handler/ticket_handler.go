@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -67,50 +68,34 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 // API: GET /tickets
 func (h *TicketHandler) HandleListTickets(c *gin.Context) {
-	filters := map[string]interface{}{}
-
-	if status := c.Query("status"); status != "" {
-		filters["status"] = status
-	}
-	if priority := c.Query("priority"); priority != "" {
-		filters["priority"] = priority
-	}
-	if assigneeID := c.Query("assignee_id"); assigneeID != "" {
-		filters["assignee_id"] = assigneeID
+	var query struct {
+		dto.TicketFilter
+		dto.PaginationQuery
 	}
 
-	var paging dto.PaginationQuery
-	if err := c.ShouldBindQuery(&paging); err != nil {
+	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   "invalid pagination parameters: " + err.Error(),
+			Error:   "invalid query parameters: " + err.Error(),
 		})
 		return
 	}
 
-	tickets, err := h.ticketService.FindAll(c.Request.Context(), filters, paging)
+	tickets, err := h.ticketService.FindAll(c.Request.Context(), query.TicketFilter, query.PaginationQuery)
 	if err != nil {
+		log.Printf("[ERROR] HandleListTickets: %v", err)
+
 		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 			Success: false,
 			Error:   errmsgs.ErrInternal.Error(),
 		})
 		return
 	}
-	if tickets == nil {
-        tickets = &dto.PaginatedResult[domain.Ticket]{
-            Items: []domain.Ticket{}, 
-        }
-    } else if tickets.Items == nil {
-        tickets.Items = []domain.Ticket{} 
-    }
-	message := "Get tickets successfully"
-    if len(tickets.Items) == 0 {
-        message = "No tickets found matching the criteria"
-    }
+
 	c.JSON(http.StatusOK, dto.APIResponse[*dto.PaginatedResult[domain.Ticket]]{
 		Success: true,
-		Message: message,
-		Data:    tickets,
+		Message: "Get tickets successfully",
+		Data:    tickets, 
 	})
 }
 
