@@ -17,7 +17,7 @@ func main() {
 	dateStr := flag.String("date", time.Now().Format("2006-01-02"), "Date to generate report for (YYYY-MM-DD)")
 	flag.Parse()
 
-	date, err := time.Parse("2006-01-02", *dateStr)
+	date, err := time.ParseInLocation("2006-01-02", *dateStr, time.Local)
 	if err != nil {
 		log.Fatalf("invalid date format, expected YYYY-MM-DD: %v", err)
 	}
