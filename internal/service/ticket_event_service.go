@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"support-ticket.com/internal/config"
 	"support-ticket.com/internal/domain"
@@ -33,6 +34,7 @@ type updateJob struct {
 	TicketID   uint
 	Status     domain.TicketStatus
 	AssigneeID string
+	CreatedAt  time.Time
 }
 
 type workerOutput struct {
@@ -50,6 +52,91 @@ const (
 
 var maxBatchSize = config.GetBatchSize("MAX_BATCH_SIZE")
 
+type EventGroup struct {
+	TicketID uint
+	Events   []domain.TicketEvent
+	IsValid  bool
+	Error    string
+}
+
+type FlowValidationResult struct {
+	ValidGroups     []EventGroup
+	InvalidGroups   []EventGroup
+	RejectedDetails map[string][]domain.TicketEvent
+}
+
+func (s *ticketEventService) groupAndSortEvents(events []domain.TicketEvent) map[uint][]domain.TicketEvent {
+	grouped := make(map[uint][]domain.TicketEvent)
+	for _, e := range events {
+		grouped[e.TicketID] = append(grouped[e.TicketID], e)
+	}
+
+	for ticketID := range grouped {
+		group := grouped[ticketID]
+		for i := 0; i < len(group)-1; i++ {
+			for j := i + 1; j < len(group); j++ {
+				if group[j].CreatedAt.Before(group[i].CreatedAt) {
+					group[i], group[j] = group[j], group[i]
+				}
+			}
+		}
+		grouped[ticketID] = group
+	}
+	return grouped
+}
+
+func (s *ticketEventService) validateEventFlow(eventGroup []domain.TicketEvent) (bool, string) {
+	if len(eventGroup) <= 1 {
+		return true, ""
+	}
+
+	for i := 0; i < len(eventGroup)-1; i++ {
+		currentEvent := eventGroup[i]
+		nextEvent := eventGroup[i+1]
+
+		if currentEvent.ToStatus != nextEvent.FromStatus {
+			errorMsg := errmsgs.ErrInvalidFlowTicket.Error()
+			return false, errorMsg
+		}
+	}
+	return true, ""
+}
+
+func (s *ticketEventService) filterValidEventGroups(groupedEvents map[uint][]domain.TicketEvent) FlowValidationResult {
+	result := FlowValidationResult{
+		ValidGroups:     make([]EventGroup, 0),
+		InvalidGroups:   make([]EventGroup, 0),
+		RejectedDetails: make(map[string][]domain.TicketEvent),
+	}
+
+	for ticketID, events := range groupedEvents {
+		isValid, errMsg := s.validateEventFlow(events)
+		group := EventGroup{
+			TicketID: ticketID,
+			Events:   events,
+			IsValid:  isValid,
+			Error:    errMsg,
+		}
+
+		if isValid {
+			result.ValidGroups = append(result.ValidGroups, group)
+		} else {
+			result.InvalidGroups = append(result.InvalidGroups, group)
+			result.RejectedDetails[errMsg] = append(result.RejectedDetails[errMsg], events...)
+		}
+	}
+
+	return result
+}
+
+func (s *ticketEventService) flattenValidGroups(validGroups []EventGroup) []domain.TicketEvent {
+	var result []domain.TicketEvent
+	for _, group := range validGroups {
+		result = append(result, group.Events...)
+	}
+	return result
+}
+
 func (s *ticketEventService) processEvent(
 	event *domain.TicketEvent,
 	existingTickets map[uint]bool,
@@ -58,7 +145,6 @@ func (s *ticketEventService) processEvent(
 	mu *sync.Mutex,
 ) (EventResult, error) {
 
-	// Validate Business Logic (DB level)
 	if !existingTickets[event.TicketID] {
 		return ResultRejected, fmt.Errorf("ticket_id %d does not exist in DB", event.TicketID)
 	}
@@ -135,13 +221,24 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 			continue
 		}
 		validEvents = append(validEvents, pe.Event)
-		ticketIDs = append(ticketIDs, pe.Event.TicketID)
+	}
 
-		key := fmt.Sprintf("%d|%s|%s", pe.Event.TicketID, pe.Event.FromStatus, pe.Event.ToStatus)
+	groupedEvents := s.groupAndSortEvents(validEvents)
+	flowResult := s.filterValidEventGroups(groupedEvents)
+
+	for errorMsg, events := range flowResult.RejectedDetails {
+		rejectedEvents[errorMsg] = append(rejectedEvents[errorMsg], events...)
+		finalResult.RejectedCount += len(events)
+	}
+
+	validEvents = s.flattenValidGroups(flowResult.ValidGroups)
+
+	for _, e := range validEvents {
+		ticketIDs = append(ticketIDs, e.TicketID)
+		key := fmt.Sprintf("%d|%s|%s", e.TicketID, e.FromStatus, e.ToStatus)
 		eventKeys = append(eventKeys, key)
 	}
 
-	// Convert rejectedEvents map to RejectedDetails
 	for errorName, events := range rejectedEvents {
 		finalResult.RejectedDetails = append(finalResult.RejectedDetails, domain.RejectedDetail{
 			ErrorName: errorName,
@@ -189,7 +286,6 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 			return finalResult, err
 		}
 
-		// Sync ticket status after successful batch insert
 		uniqueTicketIDs := make(map[uint]bool)
 		for _, event := range eventsToInsert {
 			uniqueTicketIDs[event.TicketID] = true
@@ -203,11 +299,30 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 			if err != nil {
 				return finalResult, fmt.Errorf("failed to sync ticket status: %w", err)
 			}
+
+			resolvedEvents, err := s.eventRepo.FetchLatestResolvedEventPerTicket(ctx, ticketIDsInt)
+			if err != nil {
+				return finalResult, fmt.Errorf("failed to fetch resolved event timestamps: %w", err)
+			}
+
+			resolvedAtByTicket := make(map[uint]time.Time)
+			for _, ev := range resolvedEvents {
+				resolvedAtByTicket[ev.TicketID] = ev.CreatedAt
+			}
+
 			jobs := make([]updateJob, 0, len(latestEvents))
 			for _, ev := range latestEvents {
-				jobs = append(jobs, updateJob{TicketID: uint(ev.TicketID), Status: ev.ToStatus, AssigneeID: ev.AssigneeID})
+				jobs = append(jobs, updateJob{TicketID: uint(ev.TicketID), Status: ev.ToStatus, AssigneeID: ev.AssigneeID, CreatedAt: ev.CreatedAt})
 			}
 			results := worker.Run(jobs, func(job updateJob) error {
+				if job.Status == domain.StatusResolved {
+					return s.ticketRepo.UpdateStatusAndResolvedAt(ctx, job.TicketID, job.Status, job.AssigneeID, job.CreatedAt)
+				}
+				if job.Status == domain.StatusClosed {
+					if resolvedAt, ok := resolvedAtByTicket[job.TicketID]; ok {
+						return s.ticketRepo.UpdateStatusAndResolvedAt(ctx, job.TicketID, job.Status, job.AssigneeID, resolvedAt)
+					}
+				}
 				return s.ticketRepo.UpdateStatusAndAssignee(ctx, job.TicketID, job.Status, job.AssigneeID)
 			})
 			for _, err := range results {
