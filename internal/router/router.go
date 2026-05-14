@@ -5,7 +5,8 @@ import (
 	handler "support-ticket.com/internal/handler"
 )
 
-func InitRouter(r *gin.Engine, eventHandler *handler.TicketEventHandler, ticketHandler *handler.TicketHandler) *gin.Engine {
+func InitRouter(r *gin.Engine, eventHandler *handler.TicketEventHandler, 
+	ticketHandler *handler.TicketHandler, reportHandler *handler.ReportHandler) *gin.Engine {
 	r.Use(gin.Logger(), gin.Recovery())
 
 	api := r.Group("/api/v1")
@@ -21,6 +22,10 @@ func InitRouter(r *gin.Engine, eventHandler *handler.TicketEventHandler, ticketH
 			ticketGroup.GET("", ticketHandler.HandleListTickets)
 			ticketGroup.GET("/:id", ticketHandler.HandleGetTicket)
 			ticketGroup.PATCH("/:id/status", ticketHandler.HandleUpdateStatus)
+		}
+		reportGroup := api.Group("/reports")
+		{
+			reportGroup.GET("/daily", reportHandler.GetDaily)
 		}
 	}
 
