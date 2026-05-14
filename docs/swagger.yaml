@@ -63,7 +63,7 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: API documentation for Support Ticket SLA Processing System.
+  description: REST API for support ticket SLA processing system.
   title: Support Ticket SLA Processing System API
   version: "1.0"
 paths:
@@ -131,6 +131,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Import ticket events
       tags:
       - ticket-events
@@ -176,6 +178,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: List tickets
       tags:
       - Tickets
@@ -209,6 +213,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Create a new ticket
       tags:
       - Tickets
@@ -244,6 +250,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Get ticket detail
       tags:
       - Tickets
@@ -288,7 +296,15 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Update ticket status
       tags:
       - Tickets
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer " followed by your JWT token. Example: Bearer eyJhbGciOi...'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

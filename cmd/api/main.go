@@ -15,7 +15,6 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description Type "Bearer " followed by your JWT token. Example: Bearer eyJhbGciOi...
 func main() {
 	application := app.NewApp()
 

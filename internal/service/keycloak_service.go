@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"support-ticket.com/internal/dto"
 )
@@ -27,9 +26,7 @@ func NewClient(tokenURL, clientID, clientSecret string) *ClientRequest {
 		tokenURL:     tokenURL,
 		clientID:     clientID,
 		clientSecret: clientSecret,
-		httpClient: &http.Client{
-			Timeout: 10 * time.Second,
-		},
+		httpClient:   &http.Client{},
 	}
 }
 

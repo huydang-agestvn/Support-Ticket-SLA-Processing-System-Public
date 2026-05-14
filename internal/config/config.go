@@ -61,12 +61,6 @@ func LoadConfig() *Config {
 		KeycloakJWKSURL:      getEnv("KEYCLOAK_JWKS_URL"),
 	}
 
-	log.Printf("KEYCLOAK_BASE_URL=%s", cfg.KeycloakBaseURL)
-	log.Printf("KEYCLOAK_REALM=%s", cfg.KeycloakRealm)
-	log.Printf("KEYCLOAK_CLIENT_ID=%s", cfg.KeycloakClientID)
-	log.Printf("KEYCLOAK_TOKEN_URL=%s", cfg.KeycloakTokenURL)
-	log.Printf("KEYCLOAK_JWKS_URL=%s", cfg.KeycloakJWKSURL)
-
 	return cfg
 }
 

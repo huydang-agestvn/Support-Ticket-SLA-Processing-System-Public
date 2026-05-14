@@ -10,9 +10,9 @@ type UserPrincipal struct {
 }
 
 const (
-	RoleRequestor = "requestor"
-	RoleAgent     = "agent"
-	RoleManager   = "manager"
+	RoleRequestor = "Requestor"
+	RoleAgent     = "Agent"
+	RoleManager   = "Manager"
 )
 
 type RealmAccess struct {

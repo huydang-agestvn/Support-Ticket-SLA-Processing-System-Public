@@ -66,6 +66,11 @@ const docTemplate = `{
         },
         "/ticket-events/import": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Import ticket events in batch using worker pool",
                 "consumes": [
                     "application/json"
@@ -116,6 +121,11 @@ const docTemplate = `{
         },
         "/tickets": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get a list of support tickets with optional filters by status, priority and assignee ID.",
                 "produces": [
                     "application/json"
@@ -176,6 +186,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new support ticket with title, description, requestor, assignee and priority.",
                 "consumes": [
                     "application/json"
@@ -225,6 +240,11 @@ const docTemplate = `{
         },
         "/tickets/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get support ticket detail by ticket ID.",
                 "produces": [
                     "application/json"
@@ -276,6 +296,11 @@ const docTemplate = `{
         },
         "/tickets/{id}/status": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update support ticket status by ticket ID. The status transition must follow the required ticket status flow.",
                 "consumes": [
                     "application/json"
@@ -421,6 +446,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer \" followed by your JWT token. Example: Bearer eyJhbGciOi...",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -431,7 +464,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Support Ticket SLA Processing System API",
-	Description:      "API documentation for Support Ticket SLA Processing System.",
+	Description:      "REST API for support ticket SLA processing system.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
