@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -140,6 +141,8 @@ func (s *ticketEventService) flattenValidGroups(validGroups []EventGroup) []doma
 func (s *ticketEventService) processEvent(
 	event *domain.TicketEvent,
 	existingTickets map[uint]bool,
+	existingTicketStatuses map[uint]domain.TicketStatus,
+	ticketCreatedAt map[uint]time.Time,
 	existingDBEvents map[string]bool,
 	localSeen map[string]bool,
 	mu *sync.Mutex,
@@ -147,6 +150,24 @@ func (s *ticketEventService) processEvent(
 
 	if !existingTickets[event.TicketID] {
 		return ResultRejected, fmt.Errorf("ticket_id %d does not exist in DB", event.TicketID)
+	}
+
+	currentStatus, ok := existingTicketStatuses[event.TicketID]
+	if !ok {
+		return ResultRejected, fmt.Errorf("ticket_id %d does not exist in DB", event.TicketID)
+	}
+	if event.FromStatus != currentStatus {
+		return ResultRejected, fmt.Errorf("ticket_id %d current status is '%s' but event from_status is '%s'", event.TicketID, currentStatus, event.FromStatus)
+	}
+
+	if event.ToStatus == domain.StatusResolved || event.ToStatus == domain.StatusCancelled {
+		createdAt, ok := ticketCreatedAt[event.TicketID]
+		if !ok {
+			return ResultRejected, fmt.Errorf("ticket_id %d created_at not found", event.TicketID)
+		}
+		if event.CreatedAt.Before(createdAt) {
+			return ResultRejected, fmt.Errorf("%w: %s At cannot be before Created At", errmsgs.ErrInvalidInput, strings.Title(string(event.ToStatus)))
+		}
 	}
 
 	key := fmt.Sprintf("%d|%s|%s", event.TicketID, event.FromStatus, event.ToStatus)
@@ -251,6 +272,11 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 		return domain.BatchImportResult{}, fmt.Errorf("failed to fetch tickets: %w", err)
 	}
 
+	existingTicketStatuses, ticketCreatedAtByTicket, err := s.ticketRepo.GetTicketStatusAndCreatedAt(ctx, ticketIDs)
+	if err != nil {
+		return domain.BatchImportResult{}, fmt.Errorf("failed to fetch ticket metadata: %w", err)
+	}
+
 	existingDBEvents, err := s.eventRepo.GetExistingEventKeys(ctx, eventKeys)
 	if err != nil {
 		return domain.BatchImportResult{}, fmt.Errorf("failed to fetch existing events: %w", err)
@@ -260,7 +286,7 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 	var mu sync.Mutex
 
 	results := worker.Run(validEvents, func(event domain.TicketEvent) workerOutput {
-		status, _ := s.processEvent(&event, existingTickets, existingDBEvents, localSeenEvents, &mu)
+		status, _ := s.processEvent(&event, existingTickets, existingTicketStatuses, ticketCreatedAtByTicket, existingDBEvents, localSeenEvents, &mu)
 		return workerOutput{
 			Event:  event,
 			Status: status,
@@ -315,10 +341,12 @@ func (s *ticketEventService) Import(ctx context.Context, data []byte) (domain.Ba
 				jobs = append(jobs, updateJob{TicketID: uint(ev.TicketID), Status: ev.ToStatus, AssigneeID: ev.AssigneeID, CreatedAt: ev.CreatedAt})
 			}
 			results := worker.Run(jobs, func(job updateJob) error {
-				if job.Status == domain.StatusResolved {
+				switch job.Status {
+				case domain.StatusResolved:
 					return s.ticketRepo.UpdateStatusAndResolvedAt(ctx, job.TicketID, job.Status, job.AssigneeID, job.CreatedAt)
-				}
-				if job.Status == domain.StatusClosed {
+				case domain.StatusCancelled:
+					return s.ticketRepo.UpdateStatusAndCancelledAt(ctx, job.TicketID, job.Status, job.AssigneeID, job.CreatedAt)
+				case domain.StatusClosed:
 					if resolvedAt, ok := resolvedAtByTicket[job.TicketID]; ok {
 						return s.ticketRepo.UpdateStatusAndResolvedAt(ctx, job.TicketID, job.Status, job.AssigneeID, resolvedAt)
 					}

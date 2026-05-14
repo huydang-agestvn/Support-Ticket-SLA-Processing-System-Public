@@ -32,7 +32,7 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 	defer c.Request.Body.Close()
 	result, err := h.service.Import(ctx, data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
 			Error:   err.Error(),
 		})

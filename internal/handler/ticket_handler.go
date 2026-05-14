@@ -83,11 +83,9 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 	tickets, err := h.ticketService.FindAll(c.Request.Context(), query.TicketFilter, query.PaginationQuery)
 	if err != nil {
-		log.Printf("[ERROR] HandleListTickets: %v", err)
-
 		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   errmsgs.ErrInternal.Error(),
+			Error:   errmsgs.ErrInternal.Error(),	
 		})
 		return
 	}

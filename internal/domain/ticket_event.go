@@ -8,7 +8,7 @@ import (
 )
 
 type TicketEvent struct {
-	ID         uint         `json:"event_id" gorm:"primaryKey"`
+	ID         uint         `json:"event_id,omitempty" gorm:"primaryKey"`
 	TicketID   uint         `json:"ticket_id" gorm:"column:ticket_id;not null"`
 	Note       *string      `json:"note" gorm:"column:note;type:text"`
 	FromStatus TicketStatus `json:"from_status" gorm:"column:from_status;type:varchar(20);not null"`
