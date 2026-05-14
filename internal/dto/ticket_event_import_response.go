@@ -8,7 +8,6 @@ import (
 
 type TicketEventImportResponse struct {
 	TicketID   uint                `json:"ticket_id"`
-	EventIndex int                 `json:"event_index,omitempty"`
 	FromStatus domain.TicketStatus `json:"from_status"`
 	ToStatus   domain.TicketStatus `json:"to_status"`
 	AssigneeID string              `json:"assignee_id"`

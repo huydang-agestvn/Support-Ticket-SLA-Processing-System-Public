@@ -15,7 +15,7 @@ import (
 type TicketService interface {
 	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filters map[string]interface{}, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
+	FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
 	UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error
 }
 
@@ -43,23 +43,12 @@ func (s *ticketServiceImpl) Create(ctx context.Context, req dto.CreateTicketReq)
 		CreatedAt:   now,
 	}
 
-	// SLA: High = 4h, Medium = 24h, Low = 48h
-	var slaDuration time.Duration
-	switch req.Priority {
-	case domain.PriorityHigh:
-		slaDuration = 4 * time.Hour
-	case domain.PriorityMedium:
-		slaDuration = 24 * time.Hour
-	case domain.PriorityLow:
-		slaDuration = 48 * time.Hour
-	default:
-		slaDuration = 48 * time.Hour
-	}
+	// SLA duration calculation is now encapsulated in the Priority domain type
+	slaDuration := req.Priority.SLADuration()
 
 	slaDueAt := now.Add(slaDuration)
 	ticket.SLADueAt = &slaDueAt
 
-	// Domain Validation
 	if err := ticket.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid ticket data: %w", err)
 	}
@@ -85,19 +74,19 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	return ticket, nil
 }
 
-func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]interface{}, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
+func (s *ticketServiceImpl) FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
 	limit := paging.GetLimit()
 	offset := paging.GetOffset()
 	page := paging.GetPage()
 
-	tickets, total, err := s.repo.FindAll(ctx, filters, offset, limit)
+	tickets, total, err := s.repo.FindAll(ctx, filter, offset, limit)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to list tickets: %w", err)
+		return nil, fmt.Errorf("failed to list tickets: %w", err)
 	}
 	if tickets == nil {
 		tickets = []domain.Ticket{}
 	}
-
+	
 	totalPages := int(math.Ceil(float64(total) / float64(limit)))
 
 	result := &dto.PaginatedResult[domain.Ticket]{

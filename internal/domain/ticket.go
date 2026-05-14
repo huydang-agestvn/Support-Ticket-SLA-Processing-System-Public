@@ -37,6 +37,7 @@ type Ticket struct {
 	CreatedAt   time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
 	ResolvedAt  *time.Time   `json:"resolved_at" gorm:"column:resolved_at"`
 	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
+	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
 
 	// TODO:Relations
 	Events []TicketEvent `json:"events" gorm:"foreignKey:TicketID;constraint:OnDelete:CASCADE"`
@@ -48,6 +49,19 @@ func (p Priority) IsValid() bool {
 		return true
 	}
 	return false
+}
+
+func (p Priority) SLADuration() time.Duration {
+	switch p {
+	case PriorityHigh:
+		return 4 * time.Hour
+	case PriorityMedium:
+		return 24 * time.Hour
+	case PriorityLow:
+		return 48 * time.Hour
+	default:
+		return 48 * time.Hour
+	}
 }
 
 func (s TicketStatus) IsValid() bool {
@@ -109,12 +123,24 @@ func (t *Ticket) Validate() error {
 		return fmt.Errorf("%w: SLA Due At cannot be before creation time", errmsgs.ErrInvalidInput)
 	}
 	if t.Status == StatusResolved {
-		if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
-			return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
+		if err := validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", t.CreatedAt); err != nil {
+			return err
 		}
-		if t.ResolvedAt.Before(t.CreatedAt) {
-			return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
+	}
+	if t.Status == StatusCancelled {
+		if err := validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", t.CreatedAt); err != nil {
+			return err
 		}
+	}
+	return nil
+}
+
+func validateTimestampAfterCreation(ts *time.Time, fieldName string, createdAt time.Time) error {
+	if ts == nil || ts.IsZero() {
+		return fmt.Errorf("%w: %s is required", errmsgs.ErrInvalidInput, fieldName)
+	}
+	if ts.Before(createdAt) {
+		return fmt.Errorf("%w: %s cannot be before Created At", errmsgs.ErrInvalidInput, fieldName)
 	}
 	return nil
 }
@@ -145,6 +171,22 @@ func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId 
 	switch newStatus {
 	case StatusResolved:
 		t.ResolvedAt = &timestamp
+		if err := t.ValidateResolvedAt(t.CreatedAt); err != nil {
+			return err
+		}
+	case StatusCancelled:
+		t.CancelledAt = &timestamp
+		if err := t.ValidateCancelledAt(t.CreatedAt); err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+func (t *Ticket) ValidateResolvedAt(createdAt time.Time) error {
+	return validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", createdAt)
+}
+
+func (t *Ticket) ValidateCancelledAt(createdAt time.Time) error {
+	return validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", createdAt)
 }
