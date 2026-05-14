@@ -43,18 +43,8 @@ func (s *ticketServiceImpl) Create(ctx context.Context, req dto.CreateTicketReq)
 		CreatedAt:   now,
 	}
 
-	// SLA: High = 4h, Medium = 24h, Low = 48h
-	var slaDuration time.Duration
-	switch req.Priority {
-	case domain.PriorityHigh:
-		slaDuration = 4 * time.Hour
-	case domain.PriorityMedium:
-		slaDuration = 24 * time.Hour
-	case domain.PriorityLow:
-		slaDuration = 48 * time.Hour
-	default:
-		slaDuration = 48 * time.Hour
-	}
+	// SLA duration calculation is now encapsulated in the Priority domain type
+	slaDuration := req.Priority.SLADuration()
 
 	slaDueAt := now.Add(slaDuration)
 	ticket.SLADueAt = &slaDueAt

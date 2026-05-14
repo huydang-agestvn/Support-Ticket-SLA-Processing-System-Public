@@ -51,6 +51,19 @@ func (p Priority) IsValid() bool {
 	return false
 }
 
+func (p Priority) SLADuration() time.Duration {
+	switch p {
+	case PriorityHigh:
+		return 4 * time.Hour
+	case PriorityMedium:
+		return 24 * time.Hour
+	case PriorityLow:
+		return 48 * time.Hour
+	default:
+		return 48 * time.Hour
+	}
+}
+
 func (s TicketStatus) IsValid() bool {
 	switch s {
 	case StatusNew, StatusAssigned, StatusInProgress, StatusResolved, StatusClosed, StatusCancelled:
@@ -110,20 +123,24 @@ func (t *Ticket) Validate() error {
 		return fmt.Errorf("%w: SLA Due At cannot be before creation time", errmsgs.ErrInvalidInput)
 	}
 	if t.Status == StatusResolved {
-		if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
-			return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
-		}
-		if t.ResolvedAt.Before(t.CreatedAt) {
-			return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
+		if err := validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", t.CreatedAt); err != nil {
+			return err
 		}
 	}
 	if t.Status == StatusCancelled {
-		if t.CancelledAt == nil || t.CancelledAt.IsZero() {
-			return fmt.Errorf("%w: Cancelled At is required when status is cancelled", errmsgs.ErrInvalidInput)
+		if err := validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", t.CreatedAt); err != nil {
+			return err
 		}
-		if t.CancelledAt.Before(t.CreatedAt) {
-			return fmt.Errorf("%w: Cancelled At cannot be before Created At", errmsgs.ErrInvalidInput)
-		}
+	}
+	return nil
+}
+
+func validateTimestampAfterCreation(ts *time.Time, fieldName string, createdAt time.Time) error {
+	if ts == nil || ts.IsZero() {
+		return fmt.Errorf("%w: %s is required", errmsgs.ErrInvalidInput, fieldName)
+	}
+	if ts.Before(createdAt) {
+		return fmt.Errorf("%w: %s cannot be before Created At", errmsgs.ErrInvalidInput, fieldName)
 	}
 	return nil
 }
@@ -167,21 +184,9 @@ func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId 
 }
 
 func (t *Ticket) ValidateResolvedAt(createdAt time.Time) error {
-	if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
-		return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
-	}
-	if t.ResolvedAt.Before(createdAt) {
-		return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
-	}
-	return nil
+	return validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", createdAt)
 }
 
 func (t *Ticket) ValidateCancelledAt(createdAt time.Time) error {
-	if t.CancelledAt == nil || t.CancelledAt.IsZero() {
-		return fmt.Errorf("%w: Cancelled At is required when status is cancelled", errmsgs.ErrInvalidInput)
-	}
-	if t.CancelledAt.Before(createdAt) {
-		return fmt.Errorf("%w: Cancelled At cannot be before Created At", errmsgs.ErrInvalidInput)
-	}
-	return nil
+	return validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", createdAt)
 }
