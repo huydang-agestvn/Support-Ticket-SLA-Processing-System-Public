@@ -151,27 +151,6 @@ func (r *ticketRepositoryImpl) UpdateStatusAndAssignee(ctx context.Context, tick
 }
 
 func (r *ticketRepositoryImpl) updateStatusWithTimestamps(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, resolvedAt, cancelledAt *time.Time) error {
-	ticket, err := r.FindById(ctx, ticketID)
-	if err != nil {
-		return fmt.Errorf("failed to fetch ticket for status update: %w", err)
-	}
-	if ticket == nil {
-		return fmt.Errorf("failed to fetch ticket for status update: %w", gorm.ErrRecordNotFound)
-	}
-
-	if resolvedAt != nil {
-		validationTicket := &domain.Ticket{ResolvedAt: resolvedAt}
-		if err := validationTicket.ValidateResolvedAt(ticket.CreatedAt); err != nil {
-			return err
-		}
-	}
-	if cancelledAt != nil {
-		validationTicket := &domain.Ticket{CancelledAt: cancelledAt}
-		if err := validationTicket.ValidateCancelledAt(ticket.CreatedAt); err != nil {
-			return err
-		}
-	}
-
 	updates := map[string]interface{}{"status": status, "assignee_id": assigneeID}
 	if resolvedAt != nil {
 		updates["resolved_at"] = *resolvedAt

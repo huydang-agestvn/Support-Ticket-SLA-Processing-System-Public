@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -21,6 +20,40 @@ func NewTicketHandler(s service.TicketService) *TicketHandler {
 	return &TicketHandler{
 		ticketService: s,
 	}
+}
+
+// respondWithError deduplicates error handling and hides raw internal errors
+func respondWithError(c *gin.Context, err error) {
+	if errors.Is(err, errmsgs.ErrTicketNotFound) {
+		c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   errmsgs.ErrTicketNotFound.Error(),
+		})
+		return
+	}
+	if errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) || errors.Is(err, errmsgs.ErrInvalidStatusTransition) {
+		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+			Success: false,
+			Error:   err.Error(),
+		})
+		return
+	}
+	
+	// Never expose raw internal errors to the client
+	// In a real system, you would log the raw `err` here for debugging
+	c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+		Success: false,
+		Error:   errmsgs.ErrInternal.Error(), 
+	})
+}
+
+func parseTicketID(c *gin.Context) (uint, error) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		return 0, errmsgs.ErrInvalidInput
+	}
+	return uint(id), nil
 }
 
 // API: POST /tickets
@@ -46,17 +79,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
-		if errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) {
-			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
-				Success: false,
-				Error:   err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
-			Success: false,
-			Error:   err.Error(),
-		})
+		respondWithError(c, err)
 		return
 	}
 
@@ -83,45 +106,31 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 
 	tickets, err := h.ticketService.FindAll(c.Request.Context(), query.TicketFilter, query.PaginationQuery)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
-			Success: false,
-			Error:   errmsgs.ErrInternal.Error(),	
-		})
+		respondWithError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, dto.APIResponse[*dto.PaginatedResult[domain.Ticket]]{
 		Success: true,
 		Message: "Get tickets successfully",
-		Data:    tickets, 
+		Data:    tickets,
 	})
 }
 
 // API: GET /tickets/:id
 func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
+	id, err := parseTicketID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   errmsgs.ErrInvalidInput.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
 
-	ticket, err := h.ticketService.FindById(c.Request.Context(), uint(id))
+	ticket, err := h.ticketService.FindById(c.Request.Context(), id)
 	if err != nil {
-		if errors.Is(err, errmsgs.ErrTicketNotFound) {
-			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
-				Success: false,
-				Error:   errmsgs.ErrTicketNotFound.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
-			Success: false,
-			Error:   errmsgs.ErrInternal.Error() + ": " + err.Error(),
-		})
+		respondWithError(c, err)
 		return
 	}
 
@@ -133,12 +142,11 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 
 // API: PATCH /tickets/:id/status
 func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.ParseUint(idStr, 10, 32)
+	id, err := parseTicketID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,
-			Error:   errmsgs.ErrInvalidInput.Error(),
+			Error:   err.Error(),
 		})
 		return
 	}
@@ -154,25 +162,7 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 
 	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), req)
 	if err != nil {
-		if errors.Is(err, errmsgs.ErrTicketNotFound) {
-			c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
-				Success: false,
-				Error:   errmsgs.ErrTicketNotFound.Error(),
-			})
-			return
-		}
-		if errors.Is(err, errmsgs.ErrInvalidStatusTransition) || errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) {
-			c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
-				Success: false,
-				Error:   err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
-			Success: false,
-			Error:   errmsgs.ErrInternal.Error() + ": " + err.Error(),
-		})
+		respondWithError(c, err)
 		return
 	}
 

@@ -45,7 +45,10 @@ func (e *TicketEvent) Validate() error {
 	if !e.ToStatus.IsValid() {
 		return fmt.Errorf("%w: Unknown To Status '%s'", errmsgs.ErrInvalidInput, e.ToStatus)
 	}
-	if e.FromStatus != e.ToStatus && !e.FromStatus.CanTransitionTo(e.ToStatus) {
+	if e.FromStatus == e.ToStatus {
+		return fmt.Errorf("%w: From Status and To Status cannot be the same ('%s')", errmsgs.ErrInvalidStatusTransition, e.FromStatus)
+	}
+	if !e.FromStatus.CanTransitionTo(e.ToStatus) {
 		return fmt.Errorf("%w: Illegal event transition intent from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, e.FromStatus, e.ToStatus)
 	}
 	if e.CreatedAt.IsZero() {
