@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/model"
 	"support-ticket.com/internal/repository"
 )
 

@@ -1,9 +1,9 @@
-package dto
+package response
 
 import (
 	"time"
 
-	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/model"
 )
 
 type TicketEventImportResponse struct {
