@@ -9,14 +9,14 @@ import (
 	"support-ticket.com/internal/dto/common"
 	"support-ticket.com/internal/dto/request"
 	"support-ticket.com/internal/errmsgs"
-	"support-ticket.com/internal/model"
+	domain "support-ticket.com/internal/model"
 	"support-ticket.com/internal/repository"
 )
 
 type TicketService interface {
 	Create(ctx context.Context, req request.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filter request.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
+	FindAll(ctx context.Context, filter request.TicketFilter, paging common.PaginationQuery) (*common.PaginatedResult[domain.Ticket], error)
 	UpdateTicketStatus(ctx context.Context, id uint, req request.UpdateStatusReq) error
 }
 
@@ -75,7 +75,7 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	return ticket, nil
 }
 
-func (s *ticketServiceImpl) FindAll(ctx context.Context, filter request.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
+func (s *ticketServiceImpl) FindAll(ctx context.Context, filter request.TicketFilter, paging common.PaginationQuery) (*common.PaginatedResult[domain.Ticket], error) {
 	limit := paging.GetLimit()
 	offset := paging.GetOffset()
 	page := paging.GetPage()
@@ -90,7 +90,7 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filter request.TicketFi
 
 	totalPages := int(math.Ceil(float64(total) / float64(limit)))
 
-	result := &dto.PaginatedResult[domain.Ticket]{
+	result := &common.PaginatedResult[domain.Ticket]{
 		Items:      tickets,
 		Total:      total,
 		Page:       page,

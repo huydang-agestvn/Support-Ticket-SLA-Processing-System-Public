@@ -1,9 +1,4 @@
-package dto
-
-type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
+package response
 
 type LoginResponse struct {
 	AccessToken      string `json:"access_token"`

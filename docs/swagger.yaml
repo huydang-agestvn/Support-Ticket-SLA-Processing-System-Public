@@ -100,6 +100,41 @@ paths:
       summary: Login
       tags:
       - Auth
+  /reports/daily:
+    get:
+      consumes:
+      - application/json
+      description: Get daily ticket SLA report by date. If date is not provided, today
+        will be used.
+      parameters:
+      - description: Report date in YYYY-MM-DD format
+        example: "2026-05-05"
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get daily report successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid date format
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Report not found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get daily report
+      tags:
+      - Reports
   /ticket-events/import:
     post:
       consumes:
@@ -138,38 +173,44 @@ paths:
       - ticket-events
   /tickets:
     get:
-      description: Get a list of support tickets with optional filters by status,
-        priority and assignee ID.
+      consumes:
+      - application/json
+      description: Get tickets with filters and pagination
       parameters:
       - description: Filter by ticket status
-        enum:
-        - new
-        - assigned
-        - in_progress
-        - resolved
-        - closed
-        - cancelled
         in: query
         name: status
         type: string
-      - description: Filter by ticket priority
-        enum:
-        - low
-        - medium
-        - high
-        - urgent
+      - description: Filter by priority
         in: query
         name: priority
         type: string
+      - description: Filter by requestor ID
+        in: query
+        name: requestor_id
+        type: integer
       - description: Filter by assignee ID
         in: query
         name: assignee_id
-        type: string
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: List tickets successfully
+          description: Get tickets successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid query parameters
           schema:
             additionalProperties: true
             type: object
@@ -186,8 +227,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new support ticket with title, description, requestor,
-        assignee and priority.
+      description: Create a new support ticket
       parameters:
       - description: Create ticket request
         in: body
@@ -215,12 +255,14 @@ paths:
             type: object
       security:
       - BearerAuth: []
-      summary: Create a new ticket
+      summary: Create ticket
       tags:
       - Tickets
   /tickets/{id}:
     get:
-      description: Get support ticket detail by ticket ID.
+      consumes:
+      - application/json
+      description: Get ticket detail by ID
       parameters:
       - description: Ticket ID
         in: path
@@ -231,12 +273,12 @@ paths:
       - application/json
       responses:
         "200":
-          description: Get ticket detail successfully
+          description: Get ticket successfully
           schema:
             additionalProperties: true
             type: object
         "400":
-          description: Invalid ticket ID format
+          description: Invalid ticket ID
           schema:
             additionalProperties: true
             type: object
@@ -259,15 +301,14 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update support ticket status by ticket ID. The status transition
-        must follow the required ticket status flow.
+      description: Update status of a ticket by ID
       parameters:
       - description: Ticket ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Update ticket status request
+      - description: Update status request
         in: body
         name: request
         required: true
@@ -282,7 +323,7 @@ paths:
             additionalProperties: true
             type: object
         "400":
-          description: Invalid request body, invalid ticket ID or invalid status transition
+          description: Invalid request body or invalid status transition
           schema:
             additionalProperties: true
             type: object
@@ -303,7 +344,6 @@ paths:
       - Tickets
 securityDefinitions:
   BearerAuth:
-    description: 'Type "Bearer " followed by your JWT token. Example: Bearer eyJhbGciOi...'
     in: header
     name: Authorization
     type: apiKey

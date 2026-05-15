@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/dto/request"
+	"support-ticket.com/internal/dto/response"
 )
 
 type AuthService struct {
@@ -17,7 +18,7 @@ func NewAuthService(keycloakClient *ClientRequest) *AuthService {
 	}
 }
 
-func (s *AuthService) Login(input dto.LoginRequest) (*dto.LoginResponse, error) {
+func (s *AuthService) Login(input request.LoginRequest) (*response.LoginResponse, error) {
 	username := strings.TrimSpace(input.Username)
 	password := strings.TrimSpace(input.Password)
 
@@ -34,7 +35,7 @@ func (s *AuthService) Login(input dto.LoginRequest) (*dto.LoginResponse, error) 
 		return nil, err
 	}
 
-	return &dto.LoginResponse{
+	return &response.LoginResponse{
 		AccessToken:      tokenResp.AccessToken,
 		RefreshToken:     tokenResp.RefreshToken,
 		TokenType:        tokenResp.TokenType,

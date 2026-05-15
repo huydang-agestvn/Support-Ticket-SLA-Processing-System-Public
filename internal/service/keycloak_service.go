@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/dto/response"
 )
 
 type ClientRequest struct {
@@ -30,7 +30,7 @@ func NewClient(tokenURL, clientID, clientSecret string) *ClientRequest {
 	}
 }
 
-func (c *ClientRequest) Login(username, password string) (*dto.KeycloakTokenResponse, error) {
+func (c *ClientRequest) Login(username, password string) (*response.KeycloakTokenResponse, error) {
 	if c.tokenURL == "" {
 		return nil, fmt.Errorf("keycloak token url is required")
 	}
@@ -68,7 +68,7 @@ func (c *ClientRequest) Login(username, password string) (*dto.KeycloakTokenResp
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		var kcErr dto.KeycloakErrorResponse
+		var kcErr response.KeycloakErrorResponse
 		_ = json.NewDecoder(resp.Body).Decode(&kcErr)
 
 		if kcErr.Error != "" {
@@ -78,7 +78,7 @@ func (c *ClientRequest) Login(username, password string) (*dto.KeycloakTokenResp
 		return nil, fmt.Errorf("keycloak login failed with status code: %d", resp.StatusCode)
 	}
 
-	var tokenResp dto.KeycloakTokenResponse
+	var tokenResp response.KeycloakTokenResponse
 	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
 		return nil, fmt.Errorf("failed to decode keycloak token response: %w", err)
 	}

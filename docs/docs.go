@@ -64,6 +64,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/reports/daily": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get daily ticket SLA report by date. If date is not provided, today will be used.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reports"
+                ],
+                "summary": "Get daily report",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "2026-05-05",
+                        "description": "Report date in YYYY-MM-DD format",
+                        "name": "date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Get daily report successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid date format",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Report not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/ticket-events/import": {
             "post": {
                 "security": [
@@ -126,7 +178,10 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get a list of support tickets with optional filters by status, priority and assignee ID.",
+                "description": "Get tickets with filters and pagination",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -136,41 +191,52 @@ const docTemplate = `{
                 "summary": "List tickets",
                 "parameters": [
                     {
-                        "enum": [
-                            "new",
-                            "assigned",
-                            "in_progress",
-                            "resolved",
-                            "closed",
-                            "cancelled"
-                        ],
                         "type": "string",
                         "description": "Filter by ticket status",
                         "name": "status",
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            "low",
-                            "medium",
-                            "high",
-                            "urgent"
-                        ],
                         "type": "string",
-                        "description": "Filter by ticket priority",
+                        "description": "Filter by priority",
                         "name": "priority",
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
+                        "description": "Filter by requestor ID",
+                        "name": "requestor_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "Filter by assignee ID",
                         "name": "assignee_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List tickets successfully",
+                        "description": "Get tickets successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -191,7 +257,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Create a new support ticket with title, description, requestor, assignee and priority.",
+                "description": "Create a new support ticket",
                 "consumes": [
                     "application/json"
                 ],
@@ -201,7 +267,7 @@ const docTemplate = `{
                 "tags": [
                     "Tickets"
                 ],
-                "summary": "Create a new ticket",
+                "summary": "Create ticket",
                 "parameters": [
                     {
                         "description": "Create ticket request",
@@ -245,7 +311,10 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get support ticket detail by ticket ID.",
+                "description": "Get ticket detail by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -264,14 +333,14 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Get ticket detail successfully",
+                        "description": "Get ticket successfully",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Invalid ticket ID format",
+                        "description": "Invalid ticket ID",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -301,7 +370,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update support ticket status by ticket ID. The status transition must follow the required ticket status flow.",
+                "description": "Update status of a ticket by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -321,7 +390,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Update ticket status request",
+                        "description": "Update status request",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -339,7 +408,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid request body, invalid ticket ID or invalid status transition",
+                        "description": "Invalid request body or invalid status transition",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -449,7 +518,6 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "BearerAuth": {
-            "description": "Type \"Bearer \" followed by your JWT token. Example: Bearer eyJhbGciOi...",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

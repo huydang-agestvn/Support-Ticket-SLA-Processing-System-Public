@@ -1,4 +1,4 @@
-package dto
+package response
 
 type KeycloakTokenResponse struct {
 	AccessToken      string `json:"access_token"`

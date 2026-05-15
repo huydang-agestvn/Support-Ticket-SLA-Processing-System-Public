@@ -7,7 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	dto "support-ticket.com/internal/dto/common"
+	"support-ticket.com/internal/auth"
+	"support-ticket.com/internal/dto/common"
 	"support-ticket.com/internal/dto/request"
 	"support-ticket.com/internal/errmsgs"
 	domain "support-ticket.com/internal/model"
@@ -27,14 +28,14 @@ func NewTicketHandler(s service.TicketService) *TicketHandler {
 // respondWithError deduplicates error handling and hides raw internal errors
 func respondWithError(c *gin.Context, err error) {
 	if errors.Is(err, errmsgs.ErrTicketNotFound) {
-		c.JSON(http.StatusNotFound, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusNotFound, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   errmsgs.ErrTicketNotFound.Error(),
 		})
 		return
 	}
 	if errors.Is(err, errmsgs.ErrValidation) || errors.Is(err, errmsgs.ErrInvalidInput) || errors.Is(err, errmsgs.ErrInvalidStatusTransition) {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   err.Error(),
 		})
@@ -43,7 +44,7 @@ func respondWithError(c *gin.Context, err error) {
 
 	// Never expose raw internal errors to the client
 	// In a real system, you would log the raw `err` here for debugging
-	c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
+	c.JSON(http.StatusInternalServerError, common.APIResponse[interface{}]{
 		Success: false,
 		Error:   errmsgs.ErrInternal.Error(),
 	})
@@ -58,12 +59,52 @@ func parseTicketID(c *gin.Context) (uint, error) {
 	return uint(id), nil
 }
 
-// API: POST /tickets
+func getCurrentAssigneeID(c *gin.Context) (string, bool) {
+	currentUser, ok := auth.UserFromContext(c.Request.Context())
+	if !ok {
+		c.JSON(http.StatusUnauthorized, common.APIResponse[interface{}]{
+			Success: false,
+			Error:   "unauthenticated",
+		})
+		return "", false
+	}
+
+	if !currentUser.HasAnyRole("agent", "admin") {
+		c.JSON(http.StatusForbidden, common.APIResponse[interface{}]{
+			Success: false,
+			Error:   "forbidden: insufficient role",
+		})
+		return "", false
+	}
+
+	if currentUser.UserID == "" {
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
+			Success: false,
+			Error:   "missing user id in token",
+		})
+		return "", false
+	}
+
+	return currentUser.UserID, true
+}
+
+// HandleCreateTicket godoc
+// @Summary Create ticket
+// @Description Create a new support ticket
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.CreateTicketReq true "Create ticket request"
+// @Success 201 {object} map[string]interface{} "Ticket created successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid request body or invalid priority"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /tickets [post]
 func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 	var req request.CreateTicketReq
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   "invalid request body: " + err.Error(),
 		})
@@ -72,7 +113,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 
 	// Validate priority
 	if !req.Priority.IsValid() {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   "invalid priority value",
 		})
@@ -85,21 +126,37 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dto.APIResponse[*domain.Ticket]{
+	c.JSON(http.StatusCreated, common.APIResponse[*domain.Ticket]{
 		Success: true,
 		Data:    ticket,
 	})
 }
 
-// API: GET /tickets
+// HandleListTickets godoc
+// @Summary List tickets
+// @Description Get tickets with filters and pagination
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param status query string false "Filter by ticket status"
+// @Param priority query string false "Filter by priority"
+// @Param requestor_id query int false "Filter by requestor ID"
+// @Param assignee_id query int false "Filter by assignee ID"
+// @Param page query int false "Page number"
+// @Param page_size query int false "Page size"
+// @Success 200 {object} map[string]interface{} "Get tickets successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid query parameters"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /tickets [get]
 func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 	var query struct {
 		request.TicketFilter
-		dto.PaginationQuery
+		common.PaginationQuery
 	}
 
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   "invalid query parameters: " + err.Error(),
 		})
@@ -112,18 +169,30 @@ func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.APIResponse[*dto.PaginatedResult[domain.Ticket]]{
+	c.JSON(http.StatusOK, common.APIResponse[*common.PaginatedResult[domain.Ticket]]{
 		Success: true,
 		Message: "Get tickets successfully",
 		Data:    tickets,
 	})
 }
 
-// API: GET /tickets/:id
+// HandleGetTicket godoc
+// @Summary Get ticket detail
+// @Description Get ticket detail by ID
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Ticket ID"
+// @Success 200 {object} map[string]interface{} "Get ticket successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid ticket ID"
+// @Failure 404 {object} map[string]interface{} "Ticket not found"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /tickets/{id} [get]
 func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 	id, err := parseTicketID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   err.Error(),
 		})
@@ -136,17 +205,30 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.APIResponse[*domain.Ticket]{
+	c.JSON(http.StatusOK, common.APIResponse[*domain.Ticket]{
 		Success: true,
 		Data:    ticket,
 	})
 }
 
-// API: PATCH /tickets/:id/status
+// HandleUpdateStatus godoc
+// @Summary Update ticket status
+// @Description Update status of a ticket by ID
+// @Tags Tickets
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path int true "Ticket ID"
+// @Param request body dto.UpdateStatusReq true "Update status request"
+// @Success 200 {object} map[string]interface{} "Ticket status updated successfully"
+// @Failure 400 {object} map[string]interface{} "Invalid request body or invalid status transition"
+// @Failure 404 {object} map[string]interface{} "Ticket not found"
+// @Failure 500 {object} map[string]interface{} "Internal server error"
+// @Router /tickets/{id}/status [patch]
 func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 	id, err := parseTicketID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   err.Error(),
 		})
@@ -155,20 +237,27 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 
 	var req request.UpdateStatusReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
+		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
 			Success: false,
 			Error:   errmsgs.ErrInvalidInput.Error() + ": " + err.Error(),
 		})
 		return
 	}
 
-	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), uint(id), req)
+	assigneeID, ok := getCurrentAssigneeID(c)
+	if !ok {
+		return
+	}
+
+	req.AssigneeID = assigneeID
+
+	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), id, req)
 	if err != nil {
 		respondWithError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.APIResponse[interface{}]{
+	c.JSON(http.StatusOK, common.APIResponse[interface{}]{
 		Success: true,
 		Message: "ticket status updated successfully",
 	})
