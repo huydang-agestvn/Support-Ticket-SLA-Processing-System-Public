@@ -1,38 +1,28 @@
 # Support Ticket SLA Processing System
 
-Backend project for **Phase 2 - Week 5: Core Logic & Concurrency**.
+Backend project for **Phase 2 - Week 6: REST API & Database Integration**.
 
-This repository currently focuses on in-memory Go logic: domain models, status validation, batch ticket-event processing, and a goroutine worker pool. REST API, PostgreSQL, Docker Compose runtime, CI, and ETL reporting are planned for later weeks and are not claimed as implemented here.
+This repository includes a robust Support Ticket SLA Processing System featuring Domain Models, Status Validation, High-Performance Concurrency, PostgreSQL integration, and REST API endpoints. You can run the entire stack (App + Database) using Docker Compose.
 
-## Week 5 Scope
+## Week 6 Scope
 
 Implemented:
 
-- Ticket domain structs for `tickets`, `ticket_events`, and `daily_ticket_reports`.
-- Status and priority validation.
-- Ticket status transition rules.
-- In-memory batch import service.
-- Concurrent worker pool using goroutines, channels, and `sync.WaitGroup`.
-- Duplicate counting with a mutex-protected in-memory map.
-- Sample importer command: `go run ./cmd/import-sample`.
+- **REST API Endpoints:** Complete API suite using Gin framework (`POST /api/v1/tickets`, `GET /api/v1/tickets`, `GET /api/v1/tickets/:id`, `PATCH /api/v1/tickets/:id/status`, `POST /api/v1/ticket-events/import`, `GET /api/v1/reports/daily`).
+- **Database Integration:** PostgreSQL schema, migrations, and data access using the Repository pattern with GORM.
+- **Core Domain Logic:** Ticket domain structs for `tickets`, `ticket_events`, and `ticket_reports`. Strict status validation and FSM transition rules.
+- **High-Performance Concurrency:** Lock-free batch event import service utilizing a worker pool. Efficiently groups events by `TicketID` to eliminate N+1 database queries and Mutex bottlenecks.
+- **Reporting System:** Daily SLA report generation logic (New, Resolved, Cancelled, Overdue, SLA Breaches).
+- **Clean Architecture:** Strict separation between Handlers, Services, Repositories, and Domain models.
 
 Not implemented yet:
 
-- REST endpoints such as `POST /tickets` or `POST /ticket-events/import`.
-- PostgreSQL schema, migrations, repositories, or persistence.
-- Docker Compose app/database runtime.
 - Automated unit or integration test coverage.
-- Daily ETL/report generation command.
+- Scheduled cron jobs for reports.
 
 ## Business Context
 
-The system models internal support tickets for IT, HR, or facilities requests. Ticket events are imported in batches and must be classified as:
-
-- `accepted`: valid event and not previously seen.
-- `rejected`: invalid actor, status, or transition.
-- `duplicate`: event key was already processed in the current in-memory run.
-
-The Week 5 target is to prove the core business rules and concurrency flow before adding API and database layers.
+The system models internal support tickets for IT, HR, or facilities requests. Ticket events are imported in high-volume batches and must be validated. The system generates Service Level Agreement (SLA) reports to track agent resolution performance.
 
 ## Status Flow
 
@@ -48,128 +38,124 @@ flowchart LR
   resolved --> closed
 ```
 
+
 Notes:
 
 - Valid statuses: `new`, `assigned`, `in_progress`, `resolved`, `closed`, `cancelled`.
 - Valid priorities: `low`, `medium`, `high`.
-- Same-status events such as `new -> new` are accepted by `TicketEvent.Validate()` and are useful for creation/history records.
 - Terminal statuses do not transition further because `closed` and `cancelled` have no outgoing transitions.
 
 ## Project Structure
 
 ```text
-.
-|-- cmd/import-sample/
-|   |-- main.go                    # Loads sample JSON and runs the worker pool
-|   `-- ticket_events_sample.json  # Mock batch input for Week 5
-|-- internal/domain/
-|   |-- ticket.go                  # Ticket model, status/priority rules
-|   |-- ticket_event.go            # Ticket event model and event validation
-|   |-- ticket_report.go           # Daily report model and validation
-|   `-- errors.go
-|-- internal/service/
-|   `-- ticket_service.go          # In-memory event processing and duplicate detection
-|-- internal/worker/
-|   `-- job.go                     # Worker pool for batch processing
-|-- config/
-|   `-- config.go                  # Placeholder package
-|-- Dockerfile                     # Placeholder for later weeks
-|-- docker-compose.yml             # Placeholder for later weeks
-`-- go.mod
+support-ticket-sla/
+├── cmd/
+│   ├── api/
+│   │   └── main.go                  # Starts Gin server: loads config, connects to DB, setups router
+│   ├── import-sample/
+│   │   └── main.go                  # Runs test batch import with sample data (Week 5)
+│   └── report/
+│       └── main.go                  # ETL job: go run ./cmd/report --date=2026-05-04 (Week 8)
+│
+├── docs/
+│   └── swagger.yml                  # Swagger UI for API documentation
+├── internal/
+|   ├── app/
+│   │   ├── app.go                       # main.go for the application
+│   ├── auth/
+│   │   ├── context.go                   # checks Authorization Bearer 
+│   │   ├── keycloak.go                  # Verifies JWT with Keycloak JWKS endpoint
+│   │   └── claims.go                    # Struct containing user info from JWT claims
+│   │
+│   ├── config/
+│   │   └── config.go                # Loads environment variables: DB URL, port
+│   │
+│   ├── domain/
+│   │   ├── ticket.go                # Ticket struct, TicketStatus enum, Priority enum, transition validator
+│   │   ├── ticket_event.go          # TicketEvent struct, BatchImportResult struct
+│   │   ├── ticket_report.go         # DailyTicketReport struct
+│   │   └── errors.go                # Sentinel errors: ErrInvalidTransition, ErrValidation
+│   │
+|   ├──dto/
+|   |   ├── api_response.go          # API response structure
+|   │   ├── pagination.go            # Pagination structure
+│   │   └── ticket_dto.go            # Ticket DTOs
+│   |   └── ticket_event_import_response.go # Ticket event import response structure
+|   |   
+|   ├── errmsgs/
+│   |   ├── errors.go                # Error messages
+|   |
+|   ├── handler/
+│   │   ├── ticket_handler.go        # POST /tickets, GET /tickets, GET /tickets/:id,... 
+│   │   ├── import_handler.go        # POST /ticket-events/import
+│   │   └── report_handler.go        # GET /reports/daily
+│   │
+|   ├── middleware/
+|   |
+|   ├── migration/
+|   |   └── migrate.go               # Uses GORM to initialize database schemas
+|   |
+│   ├── repository/
+│   │   ├── ticket_repository.go     # Interface + Postgres impl: Create, GetByID, List, UpdateStatus
+│   │   ├── event_repository.go      # Interface + Postgres impl: Save, ListByTicketID
+│   │   └── report_repository.go     # Interface + Postgres impl: Upsert, GetByDate
+│   │
+|   ├── router/
+|   |   └── router.go                # Initializes routes and groups
+│   ├── service/
+│   │   ├── ticket_service.go        # Interface + impl: Create, GetByID, List
+│   │   ├── import_service.go        # Interface + impl: Coordinates batch import, calls
+│   │   └── report_service.go        # Interface + impl: Generate daily report, GetByDate
+│   │
+│   └── worker/
+│       ├── job.go                   # Worker processing pool  
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                   # on push: go fmt, go vet, go test -race ./...
+│
+├── docker-compose.yml               # Services: app + postgres + keycloak
+├── Dockerfile                       # Multi-stage build for Go API
+├── Makefile                         # make run, make test, make migrate, make docker
+├── .env.example                     # Environment variables template, do not commit real .env
+├── .gitignore
+├── go.mod
+├── go.sum
+└── README.md
 ```
 
-## Processing Flow
 
-```mermaid
-sequenceDiagram
-  participant CLI as cmd/import-sample
-  participant Worker as worker.Run
-  participant Service as TicketService
-  participant Domain as TicketEvent.Validate
-
-  CLI->>CLI: Read ticket_events_sample.json
-  CLI->>Worker: Run(events, 5, service)
-  Worker->>Service: ProcessEvent(event)
-  Service->>Service: Check duplicate key with mutex
-  Service->>Domain: Validate actor/status/transition
-  Domain-->>Service: nil or validation error
-  Service-->>Worker: accepted/rejected/duplicate
-  Worker-->>CLI: BatchImportResult
-  CLI->>CLI: Print JSON summary
-```
-
-Current duplicate key:
-
-```text
-ticket_id|from_status|to_status
-```
-
-Duplicate detection happens before validation in `TicketService.ProcessEvent()`. Because of that order, an invalid event that repeats an existing key is counted as `duplicate`, not `rejected`.
-
-## How To Run
+### Running Locally
 
 Prerequisite:
+- Go `1.22+` installed.
+- A running PostgreSQL database.
 
-- Go version compatible with `go.mod` (`go 1.26.2` is currently declared).
+1. Create a `.env` file based on your local database credentials:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=postgres
+   DB_PASSWORD=secret
+   DB_NAME=ticket_sla
+   DB_SSLMODE=disable
+   SERVER_PORT=8080
+   WORKER_POOL_SIZE=20
+   MAX_BATCH_SIZE=5000
+   ```
+2. Run the API Server:
+   ```bash
+   go run ./cmd/api/main.go
+   ```
 
-Run the sample importer:
+### Running Reports
 
+You can generate a daily SLA report manually via the CLI tool:
 ```bash
-go run ./cmd/import-sample
+go run ./cmd/report/main.go --date=2026-05-15
 ```
-
-Current output from the included sample file:
-
-```json
-{
-  "accepted_count": 425,
-  "rejected_count": 5,
-  "duplicate_count": 1
-}
-```
-
-Run package checks:
-
-```bash
-go test ./...
-```
-
-Current result: all packages compile, but there are no test files yet.
-
-## Sample Input
-
-The sample batch is stored at:
-
-```text
-cmd/import-sample/ticket_events_sample.json
-```
-
-Each event uses fields like:
-
-```json
-{
-  "ticket_id": 1,
-  "note": "Ticket assigned to support agent",
-  "from_status": "new",
-  "to_status": "assigned",
-  "actor_id": "agent-002",
-  "created_at": "2026-05-05T16:59:49.129094074+07:00"
-}
-```
-
-The current sample contains 431 events, including validation cases for blank actor, unknown statuses, illegal transitions, and terminal-state transitions.
-
-## Current Limitations
-
-- Processing is in-memory only; results are not persisted.
-- The service does not load or update the full ticket state across events.
-- Event order is not enforced by `created_at`.
-- Duplicate detection does not use `event_id`; the sample data currently omits `event_id`.
-- Worker errors are collapsed into result counts; error details are not returned by the batch summary.
-- `TicketReport` exists as a domain model, but no ETL job calculates or stores reports yet.
 
 ## Roadmap
 
-- **Week 6:** Add REST API, PostgreSQL schema/migrations, repository layer, and Docker Compose app/database setup.
 - **Week 7:** Add table-driven unit tests, integration tests, consistent error responses, and CI.
-- **Week 8:** Add daily report ETL job, report API, README polish, and final demo flow.
+- **Week 8:** Add scheduled daily report ETL job, report API, README polish, and final demo flow.
