@@ -29,7 +29,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
+                            "$ref": "#/definitions/request.LoginRequest"
                         }
                     }
                 ],
@@ -269,7 +269,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateTicketReq"
+                            "$ref": "#/definitions/request.CreateTicketReq"
                         }
                     }
                 ],
@@ -389,7 +389,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateStatusReq"
+                            "$ref": "#/definitions/request.UpdateStatusReq"
                         }
                     }
                 ],
@@ -459,11 +459,10 @@
                 "StatusCancelled"
             ]
         },
-        "dto.CreateTicketReq": {
+        "request.CreateTicketReq": {
             "type": "object",
             "required": [
                 "priority",
-                "requestor_id",
                 "title"
             ],
             "properties": {
@@ -474,9 +473,6 @@
                 "priority": {
                     "$ref": "#/definitions/domain.Priority"
                 },
-                "requestor_id": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string",
                     "maxLength": 255,
@@ -484,7 +480,7 @@
                 }
             }
         },
-        "dto.LoginRequest": {
+        "request.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
@@ -495,12 +491,12 @@
                 }
             }
         },
-        "dto.UpdateStatusReq": {
+        "request.UpdateStatusReq": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
-                "assignee_id": {
-                    "type": "string"
-                },
                 "note": {
                     "type": "string"
                 },

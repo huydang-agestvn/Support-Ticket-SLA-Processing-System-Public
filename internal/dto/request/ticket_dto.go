@@ -7,7 +7,7 @@ import (
 )
 
 type CreateTicketReq struct {
-	RequestorID string          `json:"requestor_id" binding:"required"`
+	RequestorID string          `json:"-" swaggerignore:"true"`
 	Title       string          `json:"title" binding:"required,min=5,max=255"`
 	Description string          `json:"description" binding:"max=5000"`
 	Priority    domain.Priority `json:"priority" binding:"required"`
@@ -15,9 +15,9 @@ type CreateTicketReq struct {
 }
 
 type UpdateStatusReq struct {
-	AssigneeID string              `json:"assignee_id"`
-	Status     domain.TicketStatus `json:"status"`
-	Note       string              `json:"note"`
+	Status     domain.TicketStatus `json:"status" binding:"required"`
+	Note       string              `json:"note,omitempty"`
+	AssigneeID string              `json:"-" swaggerignore:"true"`
 }
 
 type TicketFilter struct {

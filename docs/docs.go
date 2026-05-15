@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
+                            "$ref": "#/definitions/request.LoginRequest"
                         }
                     }
                 ],
@@ -275,7 +275,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateTicketReq"
+                            "$ref": "#/definitions/request.CreateTicketReq"
                         }
                     }
                 ],
@@ -395,7 +395,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateStatusReq"
+                            "$ref": "#/definitions/request.UpdateStatusReq"
                         }
                     }
                 ],
@@ -465,11 +465,10 @@ const docTemplate = `{
                 "StatusCancelled"
             ]
         },
-        "dto.CreateTicketReq": {
+        "request.CreateTicketReq": {
             "type": "object",
             "required": [
                 "priority",
-                "requestor_id",
                 "title"
             ],
             "properties": {
@@ -480,9 +479,6 @@ const docTemplate = `{
                 "priority": {
                     "$ref": "#/definitions/domain.Priority"
                 },
-                "requestor_id": {
-                    "type": "string"
-                },
                 "title": {
                     "type": "string",
                     "maxLength": 255,
@@ -490,7 +486,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.LoginRequest": {
+        "request.LoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
@@ -501,12 +497,12 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateStatusReq": {
+        "request.UpdateStatusReq": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
-                "assignee_id": {
-                    "type": "string"
-                },
                 "note": {
                     "type": "string"
                 },

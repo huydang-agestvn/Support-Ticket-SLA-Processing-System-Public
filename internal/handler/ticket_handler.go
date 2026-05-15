@@ -59,35 +59,6 @@ func parseTicketID(c *gin.Context) (uint, error) {
 	return uint(id), nil
 }
 
-func getCurrentAssigneeID(c *gin.Context) (string, bool) {
-	currentUser, ok := auth.UserFromContext(c.Request.Context())
-	if !ok {
-		c.JSON(http.StatusUnauthorized, common.APIResponse[interface{}]{
-			Success: false,
-			Error:   "unauthenticated",
-		})
-		return "", false
-	}
-
-	if !currentUser.HasAnyRole("agent", "admin") {
-		c.JSON(http.StatusForbidden, common.APIResponse[interface{}]{
-			Success: false,
-			Error:   "forbidden: insufficient role",
-		})
-		return "", false
-	}
-
-	if currentUser.UserID == "" {
-		c.JSON(http.StatusBadRequest, common.APIResponse[interface{}]{
-			Success: false,
-			Error:   "missing user id in token",
-		})
-		return "", false
-	}
-
-	return currentUser.UserID, true
-}
-
 // HandleCreateTicket godoc
 // @Summary Create ticket
 // @Description Create a new support ticket
@@ -95,7 +66,7 @@ func getCurrentAssigneeID(c *gin.Context) (string, bool) {
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param request body dto.CreateTicketReq true "Create ticket request"
+// @Param request body request.CreateTicketReq true "Create ticket request"
 // @Success 201 {object} map[string]interface{} "Ticket created successfully"
 // @Failure 400 {object} map[string]interface{} "Invalid request body or invalid priority"
 // @Failure 500 {object} map[string]interface{} "Internal server error"
@@ -119,6 +90,10 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 		})
 		return
 	}
+
+	currentUser := auth.UserFromContext(c.Request.Context())
+
+	req.RequestorID = currentUser.UserID
 
 	ticket, err := h.ticketService.Create(c.Request.Context(), req)
 	if err != nil {
@@ -219,7 +194,7 @@ func (h *TicketHandler) HandleGetTicket(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param id path int true "Ticket ID"
-// @Param request body dto.UpdateStatusReq true "Update status request"
+// @Param request body request.UpdateStatusReq true "Update status request"
 // @Success 200 {object} map[string]interface{} "Ticket status updated successfully"
 // @Failure 400 {object} map[string]interface{} "Invalid request body or invalid status transition"
 // @Failure 404 {object} map[string]interface{} "Ticket not found"
@@ -244,12 +219,9 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		return
 	}
 
-	assigneeID, ok := getCurrentAssigneeID(c)
-	if !ok {
-		return
-	}
+	currentUser := auth.UserFromContext(c.Request.Context())
 
-	req.AssigneeID = assigneeID
+	req.AssigneeID = currentUser.UserID
 
 	err = h.ticketService.UpdateTicketStatus(c.Request.Context(), id, req)
 	if err != nil {
