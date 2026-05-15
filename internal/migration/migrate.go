@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"gorm.io/gorm"
-	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/model"
 )
 
 // RunMigrations 

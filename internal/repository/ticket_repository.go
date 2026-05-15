@@ -7,14 +7,14 @@ import (
 	"time"
 
 	"gorm.io/gorm"
-	"support-ticket.com/internal/domain"
-	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/dto/request"
+	domain "support-ticket.com/internal/model"
 )
 
 type TicketRepository interface {
 	Create(ctx context.Context, ticket *domain.Ticket) error
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filter dto.TicketFilter, offset int, limit int) ([]domain.Ticket, int64, error)
+	FindAll(ctx context.Context, filter request.TicketFilter, offset int, limit int) ([]domain.Ticket, int64, error)
 	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
 	GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error)
 	GetTicketStatusAndCreatedAt(ctx context.Context, ticketIDs []uint) (map[uint]domain.TicketStatus, map[uint]time.Time, error)
@@ -49,7 +49,7 @@ func (r *ticketRepositoryImpl) FindById(ctx context.Context, id uint) (*domain.T
 	return &ticket, nil
 }
 
-func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filter dto.TicketFilter, offset, limit int) ([]domain.Ticket, int64, error) {
+func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filter request.TicketFilter, offset, limit int) ([]domain.Ticket, int64, error) {
 	var tickets []domain.Ticket
 	var total int64
 
@@ -64,7 +64,7 @@ func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filter dto.TicketFil
 	}
 
 	if filter.AssigneeID != "" {
-		query = query.Where("assignee_id = ?", *&filter.AssigneeID)
+		query = query.Where("assignee_id = ?", filter.AssigneeID)
 	}
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -122,9 +122,9 @@ func (r *ticketRepositoryImpl) GetTicketStatusAndCreatedAt(ctx context.Context, 
 	}
 
 	type ticketMetadataRow struct {
-		ID        uint               `gorm:"column:id"`
+		ID        uint                `gorm:"column:id"`
 		Status    domain.TicketStatus `gorm:"column:status"`
-		CreatedAt time.Time          `gorm:"column:created_at"`
+		CreatedAt time.Time           `gorm:"column:created_at"`
 	}
 
 	var rows []ticketMetadataRow

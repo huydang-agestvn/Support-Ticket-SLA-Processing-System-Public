@@ -1,6 +1,6 @@
-package dto
+package request
 
-import "support-ticket.com/internal/domain"
+import "support-ticket.com/internal/model"
 
 type CreateTicketReq struct {
 	RequestorID string          `json:"requestor_id" binding:"required"`

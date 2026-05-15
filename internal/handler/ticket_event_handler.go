@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"support-ticket.com/internal/dto"
+	dto "support-ticket.com/internal/dto/common"
+	"support-ticket.com/internal/dto/response"
 	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/service"
 )
@@ -32,7 +33,7 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 		return
 	}
 	defer c.Request.Body.Close()
-	
+
 	result, err := h.service.Import(ctx, data)
 	if err != nil {
 		if errors.Is(err, errmsgs.ErrEmptyBatch) || errors.Is(err, errmsgs.ErrBatchTooLarge) || errors.Is(err, errmsgs.ErrEmptyBody) {
@@ -42,7 +43,7 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 			})
 			return
 		}
-		
+
 		// Hide internal errors from client
 		c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 			Success: false,
@@ -51,7 +52,7 @@ func (h *TicketEventHandler) ImportEvents(c *gin.Context) {
 		return
 	}
 
-	response := dto.NewTicketImportResponse(result)
+	response := response.NewTicketImportResponse(result)
 	c.JSON(http.StatusOK, dto.APIResponse[interface{}]{
 		Success: true,
 		Data:    response,

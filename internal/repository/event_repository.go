@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
-	"support-ticket.com/internal/domain"
+	domain "support-ticket.com/internal/model"
 )
 
 type TicketEventRepository interface {

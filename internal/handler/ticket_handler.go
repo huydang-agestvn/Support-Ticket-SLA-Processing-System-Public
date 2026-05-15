@@ -6,9 +6,11 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"support-ticket.com/internal/domain"
-	"support-ticket.com/internal/dto"
+
+	dto "support-ticket.com/internal/dto/common"
+	"support-ticket.com/internal/dto/request"
 	"support-ticket.com/internal/errmsgs"
+	domain "support-ticket.com/internal/model"
 	"support-ticket.com/internal/service"
 )
 
@@ -38,12 +40,12 @@ func respondWithError(c *gin.Context, err error) {
 		})
 		return
 	}
-	
+
 	// Never expose raw internal errors to the client
 	// In a real system, you would log the raw `err` here for debugging
 	c.JSON(http.StatusInternalServerError, dto.APIResponse[interface{}]{
 		Success: false,
-		Error:   errmsgs.ErrInternal.Error(), 
+		Error:   errmsgs.ErrInternal.Error(),
 	})
 }
 
@@ -58,7 +60,7 @@ func parseTicketID(c *gin.Context) (uint, error) {
 
 // API: POST /tickets
 func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
-	var req dto.CreateTicketReq
+	var req request.CreateTicketReq
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
@@ -92,7 +94,7 @@ func (h *TicketHandler) HandleCreateTicket(c *gin.Context) {
 // API: GET /tickets
 func (h *TicketHandler) HandleListTickets(c *gin.Context) {
 	var query struct {
-		dto.TicketFilter
+		request.TicketFilter
 		dto.PaginationQuery
 	}
 
@@ -151,7 +153,7 @@ func (h *TicketHandler) HandleUpdateStatus(c *gin.Context) {
 		return
 	}
 
-	var req dto.UpdateStatusReq
+	var req request.UpdateStatusReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.APIResponse[interface{}]{
 			Success: false,

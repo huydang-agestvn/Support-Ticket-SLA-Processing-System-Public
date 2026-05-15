@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"support-ticket.com/internal/config"
-	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/model"
 	"support-ticket.com/internal/errmsgs"
 	"support-ticket.com/internal/repository"
 	"support-ticket.com/internal/worker"

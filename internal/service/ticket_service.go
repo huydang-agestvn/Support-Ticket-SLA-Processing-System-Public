@@ -6,17 +6,18 @@ import (
 	"math"
 	"time"
 
-	"support-ticket.com/internal/domain"
-	"support-ticket.com/internal/dto"
+	"support-ticket.com/internal/dto/common"
+	"support-ticket.com/internal/dto/request"
 	"support-ticket.com/internal/errmsgs"
+	"support-ticket.com/internal/model"
 	"support-ticket.com/internal/repository"
 )
 
 type TicketService interface {
-	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
+	Create(ctx context.Context, req request.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
-	UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error
+	FindAll(ctx context.Context, filter request.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
+	UpdateTicketStatus(ctx context.Context, id uint, req request.UpdateStatusReq) error
 }
 
 type ticketServiceImpl struct {
@@ -31,7 +32,7 @@ func NewTicketService(repo repository.TicketRepository, eventRepo repository.Tic
 	}
 }
 
-func (s *ticketServiceImpl) Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error) {
+func (s *ticketServiceImpl) Create(ctx context.Context, req request.CreateTicketReq) (*domain.Ticket, error) {
 	now := time.Now()
 
 	ticket := &domain.Ticket{
@@ -74,7 +75,7 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	return ticket, nil
 }
 
-func (s *ticketServiceImpl) FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
+func (s *ticketServiceImpl) FindAll(ctx context.Context, filter request.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
 	limit := paging.GetLimit()
 	offset := paging.GetOffset()
 	page := paging.GetPage()
@@ -86,7 +87,7 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filter dto.TicketFilter
 	if tickets == nil {
 		tickets = []domain.Ticket{}
 	}
-	
+
 	totalPages := int(math.Ceil(float64(total) / float64(limit)))
 
 	result := &dto.PaginatedResult[domain.Ticket]{
@@ -100,7 +101,7 @@ func (s *ticketServiceImpl) FindAll(ctx context.Context, filter dto.TicketFilter
 	return result, nil
 }
 
-func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
+func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req request.UpdateStatusReq) error {
 	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
 		return fmt.Errorf("Failed to get ticket: %w", err)
