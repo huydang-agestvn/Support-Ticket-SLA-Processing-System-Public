@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"strings"
+	"math"
 	"time"
 
 	"support-ticket.com/internal/domain"
@@ -15,7 +15,7 @@ import (
 type TicketService interface {
 	Create(ctx context.Context, req dto.CreateTicketReq) (*domain.Ticket, error)
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
+	FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error)
 	UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error
 }
 
@@ -43,23 +43,12 @@ func (s *ticketServiceImpl) Create(ctx context.Context, req dto.CreateTicketReq)
 		CreatedAt:   now,
 	}
 
-	// SLA: High = 4h, Medium = 24h, Low = 48h
-	var slaDuration time.Duration
-	switch req.Priority {
-	case domain.PriorityHigh:
-		slaDuration = 4 * time.Hour
-	case domain.PriorityMedium:
-		slaDuration = 24 * time.Hour
-	case domain.PriorityLow:
-		slaDuration = 48 * time.Hour
-	default:
-		slaDuration = 48 * time.Hour
-	}
+	// SLA duration calculation is now encapsulated in the Priority domain type
+	slaDuration := req.Priority.SLADuration()
 
 	slaDueAt := now.Add(slaDuration)
 	ticket.SLADueAt = &slaDueAt
 
-	// Domain Validation
 	if err := ticket.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid ticket data: %w", err)
 	}
@@ -85,40 +74,46 @@ func (s *ticketServiceImpl) FindById(ctx context.Context, id uint) (*domain.Tick
 	return ticket, nil
 }
 
-func (s *ticketServiceImpl) FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error) {
-	tickets, err := s.repo.FindAll(ctx, filters)
+func (s *ticketServiceImpl) FindAll(ctx context.Context, filter dto.TicketFilter, paging dto.PaginationQuery) (*dto.PaginatedResult[domain.Ticket], error) {
+	limit := paging.GetLimit()
+	offset := paging.GetOffset()
+	page := paging.GetPage()
+
+	tickets, total, err := s.repo.FindAll(ctx, filter, offset, limit)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list tickets: %w", err)
 	}
+	if tickets == nil {
+		tickets = []domain.Ticket{}
+	}
+	
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
 
-	return tickets, nil
+	result := &dto.PaginatedResult[domain.Ticket]{
+		Items:      tickets,
+		Total:      total,
+		Page:       page,
+		Limit:      limit,
+		TotalPages: totalPages,
+	}
+
+	return result, nil
 }
-//
+
 func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req dto.UpdateStatusReq) error {
 	ticket, err := s.repo.FindById(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to get ticket: %w", err)
+		return fmt.Errorf("Failed to get ticket: %w", err)
 	}
 
-	if ticket.Status == "new" && req.Status == "assigned" {
-		if strings.TrimSpace(req.AssigneeID) == "" {
-			return fmt.Errorf("assigneeId is required and cannot be empty when assigning a ticket")
-		}
+	if err := ticket.ValidateStatusTransition(req.Status, req.AssigneeID, time.Now()); err != nil {
+		return fmt.Errorf("%w", err)
 	}
-
-	if err := ticket.UpdateStatusValidate(req.Status, time.Now()); err != nil {
-		return fmt.Errorf("invalid ticket data: %w", err)
-	}
-
-	ticket.AssigneeID = req.AssigneeID
-
-	// Cập nhật status mới cho ticket
-	ticket.Status = req.Status
 
 	// Build event
 	event := &domain.TicketEvent{
 		TicketID:   ticket.ID,
-		AssigneeID: req.AssigneeID,
+		AssigneeID: ticket.AssigneeID,
 		FromStatus: ticket.Status,
 		ToStatus:   req.Status,
 		CreatedAt:  time.Now(),
@@ -127,12 +122,13 @@ func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req
 		event.Note = &req.Note
 	}
 	if err := event.Validate(); err != nil {
-		return fmt.Errorf("failed to validate event: %w", err)
+		return fmt.Errorf("Failed to validate event: %w", err)
 	}
 
+	ticket.Status = req.Status
 	// 8. Update ticket + insert event trong transaction
 	if err := s.repo.UpdateStatusWithEvent(ctx, ticket, event); err != nil {
-		return fmt.Errorf("failed to update ticket status with event: %w", err)
+		return fmt.Errorf("Failed to update ticket status with event: %w", err)
 	}
 
 	return nil

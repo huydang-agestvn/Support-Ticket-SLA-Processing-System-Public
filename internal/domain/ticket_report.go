@@ -10,14 +10,15 @@ import (
 type TicketReport struct {
 	ID                  uint      `json:"id" gorm:"primaryKey"`
 	ReportDate          time.Time `json:"report_date" gorm:"column:report_date;type:date;not null;uniqueIndex"`
-	NewCount            int       `json:"new_count" gorm:"column:new_count;not null;default:0"`
-	ResolvedCount       int       `json:"resolved_count" gorm:"column:resolved_count;not null;default:0"`
-	CancelledCount      int       `json:"cancelled_count" gorm:"column:cancelled_count;not null;default:0"`
-	OverdueCount        int       `json:"overdue_count" gorm:"column:overdue_count;not null;default:0"`
-	AvgResolutionTime   int       `json:"avg_resolution_time" gorm:"column:avg_resolution_time;not null;default:0"`
-	HighPriorityCount   int       `json:"high_priority_count" gorm:"column:high_priority_count;not null;default:0"`
-	MediumPriorityCount int       `json:"medium_priority_count" gorm:"column:medium_priority_count;not null;default:0"`
-	LowPriorityCount    int       `json:"low_priority_count" gorm:"column:low_priority_count;not null;default:0"`
+	NewCount            int64     `json:"new_count" gorm:"column:new_count;not null;default:0"`
+	ResolvedCount       int64     `json:"resolved_count" gorm:"column:resolved_count;not null;default:0"`
+	CancelledCount      int64     `json:"cancelled_count" gorm:"column:cancelled_count;not null;default:0"`
+	OverdueCount        int64     `json:"overdue_count" gorm:"column:overdue_count;not null;default:0"`
+	AvgResolutionTime   float64   `json:"avg_resolution_time" gorm:"column:avg_resolution_time;not null;default:0"`
+	HighPriorityCount   int64     `json:"high_priority_count" gorm:"column:high_priority_count;not null;default:0"`
+	MediumPriorityCount int64     `json:"medium_priority_count" gorm:"column:medium_priority_count;not null;default:0"`
+	LowPriorityCount    int64     `json:"low_priority_count" gorm:"column:low_priority_count;not null;default:0"`
+	SlaBreacheCount     int64     `json:"sla_breache_count" gorm:"column:sla_breache_count;not null;default:0"`
 	CreatedAt           time.Time `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
 }
 
@@ -30,6 +31,9 @@ func (r *TicketReport) Validate() error {
 	}
 	if r.OverdueCount < 0 {
 		return fmt.Errorf("%w: Overdue count cannot be negative", errmsgs.ErrInvalidInput)
+	}
+	if r.SlaBreacheCount < 0 {
+		return fmt.Errorf("%w: SLA breach count cannot be negative", errmsgs.ErrInvalidInput)
 	}
 	if r.AvgResolutionTime < 0 {
 		return fmt.Errorf("%w: Average resolution time cannot be negative", errmsgs.ErrInvalidInput)

@@ -14,5 +14,6 @@ var (
 	ErrTicketNotFound          = errors.New("ticket not found")
 	ErrEmptyBody               = errors.New("request body is empty")
 	ErrEmptyBatch              = errors.New("batch is empty")
-	ErrBatchTooLarge		   = errors.New("batch size exceeds maximum allowed")
+	ErrBatchTooLarge           = errors.New("batch size exceeds maximum allowed")
+	ErrInvalidFlowTicket       = errors.New("invalid flow ticket")
 )

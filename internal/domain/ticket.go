@@ -35,7 +35,6 @@ type Ticket struct {
 	Priority    Priority     `json:"priority" gorm:"column:priority;type:varchar(20);not null"`
 	Status      TicketStatus `json:"status" gorm:"column:status;type:varchar(20);not null"`
 	CreatedAt   time.Time    `json:"created_at" gorm:"column:created_at;not null;autoCreateTime:milli"`
-	UpdatedAt   time.Time    `json:"updated_at" gorm:"column:updated_at"`
 	ResolvedAt  *time.Time   `json:"resolved_at" gorm:"column:resolved_at"`
 	SLADueAt    *time.Time   `json:"sla_due_at" gorm:"column:sla_due_at"`
 	CancelledAt *time.Time   `json:"cancelled_at" gorm:"column:cancelled_at"`
@@ -50,6 +49,19 @@ func (p Priority) IsValid() bool {
 		return true
 	}
 	return false
+}
+
+func (p Priority) SLADuration() time.Duration {
+	switch p {
+	case PriorityHigh:
+		return 4 * time.Hour
+	case PriorityMedium:
+		return 24 * time.Hour
+	case PriorityLow:
+		return 48 * time.Hour
+	default:
+		return 48 * time.Hour
+	}
 }
 
 func (s TicketStatus) IsValid() bool {
@@ -111,33 +123,70 @@ func (t *Ticket) Validate() error {
 		return fmt.Errorf("%w: SLA Due At cannot be before creation time", errmsgs.ErrInvalidInput)
 	}
 	if t.Status == StatusResolved {
-		if t.ResolvedAt == nil || t.ResolvedAt.IsZero() {
-			return fmt.Errorf("%w: Resolved At is required when status is resolved", errmsgs.ErrInvalidInput)
+		if err := validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", t.CreatedAt); err != nil {
+			return err
 		}
-		if t.ResolvedAt.Before(t.CreatedAt) {
-			return fmt.Errorf("%w: Resolved At cannot be before Created At", errmsgs.ErrInvalidInput)
+	}
+	if t.Status == StatusCancelled {
+		if err := validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", t.CreatedAt); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func (t *Ticket) UpdateStatusValidate(newStatus TicketStatus, timestamp time.Time) error {
+func validateTimestampAfterCreation(ts *time.Time, fieldName string, createdAt time.Time) error {
+	if ts == nil || ts.IsZero() {
+		return fmt.Errorf("%w: %s is required", errmsgs.ErrInvalidInput, fieldName)
+	}
+	if ts.Before(createdAt) {
+		return fmt.Errorf("%w: %s cannot be before Created At", errmsgs.ErrInvalidInput, fieldName)
+	}
+	return nil
+}
+
+func (t *Ticket) ValidateStatusTransition(newStatus TicketStatus, reqAssigneeId string, timestamp time.Time) error {
+	reqAssigneeId = strings.TrimSpace(reqAssigneeId)
+
+	if t.Status == StatusNew && newStatus == StatusAssigned {
+		if reqAssigneeId == "" {
+			return fmt.Errorf("%w: Assignee ID is required when assigning a ticket", errmsgs.ErrInvalidInput)
+		}
+		t.AssigneeID = reqAssigneeId
+	} else if reqAssigneeId != "" && reqAssigneeId != t.AssigneeID {
+		return fmt.Errorf("%w: Cannot change assignee to '%s' during status transition to '%s'. Current assignee is '%s'",
+			errmsgs.ErrInvalidInput, reqAssigneeId, newStatus, t.AssigneeID)
+	}
+
 	if t.Status == newStatus {
-		return fmt.Errorf("Status is already set to '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Status is already set to '%s'", errmsgs.ErrInvalidStatusTransition, newStatus)
 	}
 	if !newStatus.IsValid() {
-		return fmt.Errorf("cannot transition to unknown status '%s': %w", newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Cannot transition to unknown status '%s'", errmsgs.ErrInvalidStatusTransition, newStatus)
 	}
 	if !t.Status.CanTransitionTo(newStatus) {
-		return fmt.Errorf("cannot transition from '%s' to '%s': %w", t.Status, newStatus, errmsgs.ErrInvalidStatusTransition)
+		return fmt.Errorf("%w: Cannot transition from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, t.Status, newStatus)
 	}
-	t.Status = newStatus
-	t.UpdatedAt = timestamp
+
 	switch newStatus {
 	case StatusResolved:
 		t.ResolvedAt = &timestamp
+		if err := t.ValidateResolvedAt(t.CreatedAt); err != nil {
+			return err
+		}
 	case StatusCancelled:
 		t.CancelledAt = &timestamp
+		if err := t.ValidateCancelledAt(t.CreatedAt); err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+func (t *Ticket) ValidateResolvedAt(createdAt time.Time) error {
+	return validateTimestampAfterCreation(t.ResolvedAt, "Resolved At", createdAt)
+}
+
+func (t *Ticket) ValidateCancelledAt(createdAt time.Time) error {
+	return validateTimestampAfterCreation(t.CancelledAt, "Cancelled At", createdAt)
 }

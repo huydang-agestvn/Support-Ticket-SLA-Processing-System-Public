@@ -4,17 +4,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 	"support-ticket.com/internal/domain"
+	"support-ticket.com/internal/dto"
 )
 
 type TicketRepository interface {
 	Create(ctx context.Context, ticket *domain.Ticket) error
 	FindById(ctx context.Context, id uint) (*domain.Ticket, error)
-	FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error)
+	FindAll(ctx context.Context, filter dto.TicketFilter, offset int, limit int) ([]domain.Ticket, int64, error)
 	UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error
 	GetExistingTicketIDs(ctx context.Context, ticketIDs []uint) (map[uint]bool, error)
+	GetTicketStatusAndCreatedAt(ctx context.Context, ticketIDs []uint) (map[uint]domain.TicketStatus, map[uint]time.Time, error)
+	UpdateStatusAndAssignee(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string) error
+	UpdateStatusAndResolvedAt(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, resolvedAt time.Time) error
+	UpdateStatusAndCancelledAt(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, cancelledAt time.Time) error
 }
 
 type ticketRepositoryImpl struct {
@@ -43,26 +49,40 @@ func (r *ticketRepositoryImpl) FindById(ctx context.Context, id uint) (*domain.T
 	return &ticket, nil
 }
 
-func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filters map[string]interface{}) ([]domain.Ticket, error) {
+func (r *ticketRepositoryImpl) FindAll(ctx context.Context, filter dto.TicketFilter, offset, limit int) ([]domain.Ticket, int64, error) {
 	var tickets []domain.Ticket
-	query := r.db.WithContext(ctx)
+	var total int64
 
-	if status, ok := filters["status"]; ok && status != "" {
-		query = query.Where("status = ?", status)
-	}
-	if priority, ok := filters["priority"]; ok && priority != "" {
-		query = query.Where("priority = ?", priority)
-	}
-	if assigneeID, ok := filters["assignee_id"]; ok && assigneeID != "" {
-		query = query.Where("assignee_id = ?", assigneeID)
+	query := r.db.WithContext(ctx).Model(&domain.Ticket{})
+
+	if filter.Status != "" {
+		query = query.Where("status = ?", filter.Status)
 	}
 
-	err := query.Preload("Events").Order("created_at DESC").Find(&tickets).Error
+	if filter.Priority != "" {
+		query = query.Where("priority = ?", filter.Priority)
+	}
+
+	if filter.AssigneeID != "" {
+		query = query.Where("assignee_id = ?", *&filter.AssigneeID)
+	}
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	if total == 0 {
+		return []domain.Ticket{}, 0, nil
+	}
+	err := query.Preload("Events").
+		Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&tickets).Error
+
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return tickets, nil
+	return tickets, total, nil
 }
 
 func (r *ticketRepositoryImpl) UpdateStatusWithEvent(ctx context.Context, ticket *domain.Ticket, event *domain.TicketEvent) error {
@@ -94,4 +114,58 @@ func (r *ticketRepositoryImpl) GetExistingTicketIDs(ctx context.Context, ticketI
 	}
 
 	return result, nil
+}
+
+func (r *ticketRepositoryImpl) GetTicketStatusAndCreatedAt(ctx context.Context, ticketIDs []uint) (map[uint]domain.TicketStatus, map[uint]time.Time, error) {
+	if len(ticketIDs) == 0 {
+		return make(map[uint]domain.TicketStatus), make(map[uint]time.Time), nil
+	}
+
+	type ticketMetadataRow struct {
+		ID        uint               `gorm:"column:id"`
+		Status    domain.TicketStatus `gorm:"column:status"`
+		CreatedAt time.Time          `gorm:"column:created_at"`
+	}
+
+	var rows []ticketMetadataRow
+	err := r.db.WithContext(ctx).Model(&domain.Ticket{}).
+		Select("id, status, created_at").
+		Where("id IN ?", ticketIDs).
+		Find(&rows).Error
+	if err != nil {
+		return nil, nil, err
+	}
+
+	statuses := make(map[uint]domain.TicketStatus, len(rows))
+	createdAt := make(map[uint]time.Time, len(rows))
+	for _, row := range rows {
+		statuses[row.ID] = row.Status
+		createdAt[row.ID] = row.CreatedAt
+	}
+
+	return statuses, createdAt, nil
+}
+
+func (r *ticketRepositoryImpl) UpdateStatusAndAssignee(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string) error {
+	return r.db.WithContext(ctx).Model(&domain.Ticket{}).Where("id = ?", ticketID).Updates(map[string]interface{}{"status": status, "assignee_id": assigneeID}).Error
+}
+
+func (r *ticketRepositoryImpl) updateStatusWithTimestamps(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, resolvedAt, cancelledAt *time.Time) error {
+	updates := map[string]interface{}{"status": status, "assignee_id": assigneeID}
+	if resolvedAt != nil {
+		updates["resolved_at"] = *resolvedAt
+	}
+	if cancelledAt != nil {
+		updates["cancelled_at"] = *cancelledAt
+	}
+
+	return r.db.WithContext(ctx).Model(&domain.Ticket{}).Where("id = ?", ticketID).Updates(updates).Error
+}
+
+func (r *ticketRepositoryImpl) UpdateStatusAndResolvedAt(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, resolvedAt time.Time) error {
+	return r.updateStatusWithTimestamps(ctx, ticketID, status, assigneeID, &resolvedAt, nil)
+}
+
+func (r *ticketRepositoryImpl) UpdateStatusAndCancelledAt(ctx context.Context, ticketID uint, status domain.TicketStatus, assigneeID string, cancelledAt time.Time) error {
+	return r.updateStatusWithTimestamps(ctx, ticketID, status, assigneeID, nil, &cancelledAt)
 }

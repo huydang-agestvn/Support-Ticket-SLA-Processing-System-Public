@@ -2,14 +2,13 @@ package domain
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"support-ticket.com/internal/errmsgs"
 )
 
 type TicketEvent struct {
-	ID         uint         `json:"event_id" gorm:"primaryKey"`
+	ID         uint         `json:"event_id,omitempty" gorm:"primaryKey"`
 	TicketID   uint         `json:"ticket_id" gorm:"column:ticket_id;not null"`
 	Note       *string      `json:"note" gorm:"column:note;type:text"`
 	FromStatus TicketStatus `json:"from_status" gorm:"column:from_status;type:varchar(20);not null"`
@@ -33,16 +32,23 @@ type RejectedDetail struct {
 }
 
 func (e *TicketEvent) Validate() error {
-	if strings.TrimSpace(e.AssigneeID) == "" {
+	if e.TicketID == 0 {
+		return fmt.Errorf("%w: Ticket ID is required", errmsgs.ErrInvalidInput)
+	}
+	if e.AssigneeID == "" {
 		return fmt.Errorf("%w: Assignee ID is required", errmsgs.ErrInvalidInput)
 	}
+
 	if !e.FromStatus.IsValid() {
 		return fmt.Errorf("%w: Unknown From Status '%s'", errmsgs.ErrInvalidInput, e.FromStatus)
 	}
 	if !e.ToStatus.IsValid() {
 		return fmt.Errorf("%w: Unknown To Status '%s'", errmsgs.ErrInvalidInput, e.ToStatus)
 	}
-	if e.FromStatus != e.ToStatus && !e.FromStatus.CanTransitionTo(e.ToStatus) {
+	if e.FromStatus == e.ToStatus {
+		return fmt.Errorf("%w: From Status and To Status cannot be the same ('%s')", errmsgs.ErrInvalidStatusTransition, e.FromStatus)
+	}
+	if !e.FromStatus.CanTransitionTo(e.ToStatus) {
 		return fmt.Errorf("%w: Illegal event transition intent from '%s' to '%s'", errmsgs.ErrInvalidStatusTransition, e.FromStatus, e.ToStatus)
 	}
 	if e.CreatedAt.IsZero() {

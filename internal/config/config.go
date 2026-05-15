@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,7 @@ type Config struct {
 	ServerPort     int
 	WorkerPoolSize int
 	DB             *gorm.DB
+	MaxBatchSize   int
 }
 
 // LoadConfig
@@ -41,6 +43,7 @@ func LoadConfig() *Config {
 
 		ServerPort:     getEnvInt("SERVER_PORT"),
 		WorkerPoolSize: getEnvInt("WORKER_POOL_SIZE"),
+		MaxBatchSize:   getEnvInt("MAX_BATCH_SIZE"),
 	}
 
 	return cfg
@@ -53,7 +56,6 @@ func (c *Config) GetDSN() string {
 	)
 }
 
-// Giữ nguyên hàm GetDatabase và các helper của bạn...
 func (c *Config) GetDatabase() (*gorm.DB, error) {
 	if c.DB != nil {
 		return c.DB, nil
@@ -65,8 +67,7 @@ func (c *Config) GetDatabase() (*gorm.DB, error) {
 	retryDelay := time.Second
 
 	for i := 0; i < maxRetries; i++ {
-		// Lưu ý: Bạn cần đảm bảo hàm initDatabase(c) đã được định nghĩa ở file khác trong package config
-		db, err = initDatabase(c)
+		db, err = gorm.Open(postgres.Open(c.GetDSN()), &gorm.Config{})
 		if err == nil {
 			c.DB = db
 			return db, nil
@@ -87,6 +88,10 @@ func getEnv(key string) string {
 }
 
 func GetPoolSize(key string) int {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found in GetPoolSize, using system environment variables")
+	}
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
 	if err != nil {
@@ -96,6 +101,10 @@ func GetPoolSize(key string) int {
 	return intVal
 }
 func GetBatchSize(key string) int {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: No .env file found in GetBatchSize, using system environment variables")
+	}
 	value := os.Getenv(key)
 	intVal, err := strconv.Atoi(value)
 	if err != nil {
