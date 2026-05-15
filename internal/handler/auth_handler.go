@@ -27,7 +27,7 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param request body dto.LoginRequest true "Login request"
+// @Param request body request.LoginRequest true "Login request"
 // @Success 200 {object} map[string]interface{} "Login successfully"
 // @Failure 400 {object} map[string]interface{} "Invalid request body"
 // @Failure 401 {object} map[string]interface{} "Invalid username or password"

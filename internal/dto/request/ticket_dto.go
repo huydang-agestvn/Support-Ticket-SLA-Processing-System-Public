@@ -3,21 +3,21 @@ package request
 import (
 	"time"
 
-	"support-ticket.com/internal/model"
+	domain "support-ticket.com/internal/model"
 )
 
 type CreateTicketReq struct {
-	RequestorID string          `json:"requestor_id" binding:"required"`
+	RequestorID string          `json:"-" swaggerignore:"true"`
 	Title       string          `json:"title" binding:"required,min=5,max=255"`
 	Description string          `json:"description" binding:"max=5000"`
 	Priority    domain.Priority `json:"priority" binding:"required"`
-	SlaDueAt    *time.Time      `json:"sla_due_at,omitempty"` 
+	SlaDueAt    *time.Time      `json:"sla_due_at,omitempty" binding:"required"`
 }
 
 type UpdateStatusReq struct {
-	AssigneeID string              `json:"assignee_id"`
-	Status     domain.TicketStatus `json:"status"`
-	Note       string              `json:"note"`
+	Status     domain.TicketStatus `json:"status" binding:"required"`
+	Note       string              `json:"note,omitempty"`
+	AssigneeID string              `json:"-" swaggerignore:"true"`
 }
 
 type TicketFilter struct {

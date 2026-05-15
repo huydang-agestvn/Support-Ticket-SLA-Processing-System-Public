@@ -109,7 +109,7 @@ func (s *ticketServiceImpl) UpdateTicketStatus(ctx context.Context, id uint, req
 	// Build event
 	event := &domain.TicketEvent{
 		TicketID:   ticket.ID,
-		AssigneeID: ticket.AssigneeID,
+		AssigneeID: req.AssigneeID,
 		FromStatus: ticket.Status,
 		ToStatus:   req.Status,
 		CreatedAt:  time.Now(),

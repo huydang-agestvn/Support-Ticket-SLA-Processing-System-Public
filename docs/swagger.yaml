@@ -26,14 +26,14 @@ definitions:
     - StatusResolved
     - StatusClosed
     - StatusCancelled
-  dto.CreateTicketReq:
+  request.CreateTicketReq:
     properties:
       description:
         maxLength: 5000
         type: string
       priority:
         $ref: '#/definitions/domain.Priority'
-      requestor_id:
+      sla_due_at:
         type: string
       title:
         maxLength: 255
@@ -41,24 +41,24 @@ definitions:
         type: string
     required:
     - priority
-    - requestor_id
+    - sla_due_at
     - title
     type: object
-  dto.LoginRequest:
+  request.LoginRequest:
     properties:
       password:
         type: string
       username:
         type: string
     type: object
-  dto.UpdateStatusReq:
+  request.UpdateStatusReq:
     properties:
-      assignee_id:
-        type: string
       note:
         type: string
       status:
         $ref: '#/definitions/domain.TicketStatus'
+    required:
+    - status
     type: object
 host: localhost:8080
 info:
@@ -78,7 +78,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.LoginRequest'
+          $ref: '#/definitions/request.LoginRequest'
       produces:
       - application/json
       responses:
@@ -234,7 +234,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateTicketReq'
+          $ref: '#/definitions/request.CreateTicketReq'
       produces:
       - application/json
       responses:
@@ -313,7 +313,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateStatusReq'
+          $ref: '#/definitions/request.UpdateStatusReq'
       produces:
       - application/json
       responses:

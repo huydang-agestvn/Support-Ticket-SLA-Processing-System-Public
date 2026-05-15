@@ -69,15 +69,15 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 
 func (m *AuthMiddleware) RequireRole(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		currentUser, ok := auth.UserFromContext(c.Request.Context())
-		if !ok {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"success": false,
-				"error":   "unauthenticated",
-			})
-			c.Abort()
-			return
-		}
+		currentUser := auth.UserFromContext(c.Request.Context())
+		// if currentUser == "" {
+		// 	c.JSON(http.StatusUnauthorized, gin.H{
+		// 		"success": false,
+		// 		"error":   "unauthorized",
+		// 	})
+		// 	c.Abort()
+		// 	return
+		//}
 
 		if !currentUser.HasAnyRole(allowedRoles...) {
 			c.JSON(http.StatusForbidden, gin.H{
