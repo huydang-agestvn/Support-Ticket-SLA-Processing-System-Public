@@ -21,9 +21,11 @@ func NewAuthMiddleware(authenticator *auth.KeycloakAuthenticator) *AuthMiddlewar
 func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
+
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
+				"code":    http.StatusUnauthorized,
 				"error":   "missing authorization header",
 			})
 			c.Abort()
@@ -34,6 +36,7 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 		if !strings.HasPrefix(authHeader, bearerPrefix) {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
+				"code":    http.StatusUnauthorized,
 				"error":   "invalid authorization header format",
 			})
 			c.Abort()
@@ -44,6 +47,7 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
+				"code":    http.StatusUnauthorized,
 				"error":   "missing bearer token",
 			})
 			c.Abort()
@@ -54,6 +58,7 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
+				"code":    http.StatusUnauthorized,
 				"error":   "invalid token: " + err.Error(),
 			})
 			c.Abort()
@@ -70,18 +75,21 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 func (m *AuthMiddleware) RequireRole(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		currentUser := auth.UserFromContext(c.Request.Context())
-		// if currentUser == "" {
-		// 	c.JSON(http.StatusUnauthorized, gin.H{
-		// 		"success": false,
-		// 		"error":   "unauthorized",
-		// 	})
-		// 	c.Abort()
-		// 	return
-		//}
+
+		if currentUser.UserID == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"code":    http.StatusUnauthorized,
+				"error":   "unauthorized",
+			})
+			c.Abort()
+			return
+		}
 
 		if !currentUser.HasAnyRole(allowedRoles...) {
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
+				"code":    http.StatusForbidden,
 				"error":   "forbidden: insufficient role",
 			})
 			c.Abort()
