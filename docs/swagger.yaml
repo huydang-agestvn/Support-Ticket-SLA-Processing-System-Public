@@ -33,12 +33,15 @@ definitions:
         type: string
       priority:
         $ref: '#/definitions/domain.Priority'
+      sla_due_at:
+        type: string
       title:
         maxLength: 255
         minLength: 5
         type: string
     required:
     - priority
+    - sla_due_at
     - title
     type: object
   request.LoginRequest:

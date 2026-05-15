@@ -469,6 +469,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "priority",
+                "sla_due_at",
                 "title"
             ],
             "properties": {
@@ -478,6 +479,9 @@ const docTemplate = `{
                 },
                 "priority": {
                     "$ref": "#/definitions/domain.Priority"
+                },
+                "sla_due_at": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string",

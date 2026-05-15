@@ -463,6 +463,7 @@
             "type": "object",
             "required": [
                 "priority",
+                "sla_due_at",
                 "title"
             ],
             "properties": {
@@ -472,6 +473,9 @@
                 },
                 "priority": {
                     "$ref": "#/definitions/domain.Priority"
+                },
+                "sla_due_at": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string",
