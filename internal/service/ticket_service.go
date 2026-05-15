@@ -40,15 +40,10 @@ func (s *ticketServiceImpl) Create(ctx context.Context, req request.CreateTicket
 		Title:       req.Title,
 		Description: req.Description,
 		Priority:    req.Priority,
+		SLADueAt:    req.SlaDueAt,
 		Status:      domain.StatusNew,
 		CreatedAt:   now,
 	}
-
-	// SLA duration calculation is now encapsulated in the Priority domain type
-	slaDuration := req.Priority.SLADuration()
-
-	slaDueAt := now.Add(slaDuration)
-	ticket.SLADueAt = &slaDueAt
 
 	if err := ticket.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid ticket data: %w", err)

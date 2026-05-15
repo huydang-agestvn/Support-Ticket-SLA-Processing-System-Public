@@ -51,18 +51,6 @@ func (p Priority) IsValid() bool {
 	return false
 }
 
-func (p Priority) SLADuration() time.Duration {
-	switch p {
-	case PriorityHigh:
-		return 4 * time.Hour
-	case PriorityMedium:
-		return 24 * time.Hour
-	case PriorityLow:
-		return 48 * time.Hour
-	default:
-		return 48 * time.Hour
-	}
-}
 
 func (s TicketStatus) IsValid() bool {
 	switch s {
