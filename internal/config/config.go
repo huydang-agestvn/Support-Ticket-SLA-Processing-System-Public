@@ -22,7 +22,15 @@ type Config struct {
 	ServerPort     int
 	WorkerPoolSize int
 	DB             *gorm.DB
-	MaxBatchSize   int
+
+	// Keycloak config
+	KeycloakBaseURL      string
+	KeycloakRealm        string
+	KeycloakClientID     string
+	KeycloakClientSecret string
+	KeycloakIssuer       string
+	KeycloakTokenURL     string
+	KeycloakJWKSURL      string
 }
 
 // LoadConfig
@@ -43,7 +51,14 @@ func LoadConfig() *Config {
 
 		ServerPort:     getEnvInt("SERVER_PORT"),
 		WorkerPoolSize: getEnvInt("WORKER_POOL_SIZE"),
-		MaxBatchSize:   getEnvInt("MAX_BATCH_SIZE"),
+
+		KeycloakBaseURL:      getEnv("KEYCLOAK_BASE_URL"),
+		KeycloakRealm:        getEnv("KEYCLOAK_REALM"),
+		KeycloakClientID:     getEnv("KEYCLOAK_CLIENT_ID"),
+		KeycloakClientSecret: getEnv("KEYCLOAK_CLIENT_SECRET"),
+		KeycloakIssuer:       getEnv("KEYCLOAK_ISSUER"),
+		KeycloakTokenURL:     getEnv("KEYCLOAK_TOKEN_URL"),
+		KeycloakJWKSURL:      getEnv("KEYCLOAK_JWKS_URL"),
 	}
 
 	return cfg

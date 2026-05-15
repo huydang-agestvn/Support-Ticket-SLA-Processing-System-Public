@@ -1,12 +1,17 @@
 package request
 
-import "support-ticket.com/internal/model"
+import (
+	"time"
+
+	"support-ticket.com/internal/model"
+)
 
 type CreateTicketReq struct {
 	RequestorID string          `json:"requestor_id" binding:"required"`
 	Title       string          `json:"title" binding:"required,min=5,max=255"`
 	Description string          `json:"description" binding:"max=5000"`
 	Priority    domain.Priority `json:"priority" binding:"required"`
+	SlaDueAt    *time.Time      `json:"sla_due_at,omitempty"` 
 }
 
 type UpdateStatusReq struct {

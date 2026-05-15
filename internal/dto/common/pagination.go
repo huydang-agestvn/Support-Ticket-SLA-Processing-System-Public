@@ -1,4 +1,4 @@
-package dto
+package common
 
 const (
 	DefaultPage  = 1

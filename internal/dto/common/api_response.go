@@ -1,4 +1,4 @@
-package dto
+package common
 
 type APIResponse[T any] struct {
 	Success bool   `json:"success"`

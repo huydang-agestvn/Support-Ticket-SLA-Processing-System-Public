@@ -1,0 +1,350 @@
+basePath: /api/v1
+definitions:
+  domain.Priority:
+    enum:
+    - low
+    - medium
+    - high
+    type: string
+    x-enum-varnames:
+    - PriorityLow
+    - PriorityMedium
+    - PriorityHigh
+  domain.TicketStatus:
+    enum:
+    - new
+    - assigned
+    - in_progress
+    - resolved
+    - closed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - StatusNew
+    - StatusAssigned
+    - StatusInProgress
+    - StatusResolved
+    - StatusClosed
+    - StatusCancelled
+  dto.CreateTicketReq:
+    properties:
+      description:
+        maxLength: 5000
+        type: string
+      priority:
+        $ref: '#/definitions/domain.Priority'
+      requestor_id:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 5
+        type: string
+    required:
+    - priority
+    - requestor_id
+    - title
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.UpdateStatusReq:
+    properties:
+      assignee_id:
+        type: string
+      note:
+        type: string
+      status:
+        $ref: '#/definitions/domain.TicketStatus'
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for support ticket SLA processing system.
+  title: Support Ticket SLA Processing System API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with username and password through Keycloak
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid username or password
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login
+      tags:
+      - Auth
+  /reports/daily:
+    get:
+      consumes:
+      - application/json
+      description: Get daily ticket SLA report by date. If date is not provided, today
+        will be used.
+      parameters:
+      - description: Report date in YYYY-MM-DD format
+        example: "2026-05-05"
+        in: query
+        name: date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get daily report successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid date format
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Report not found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get daily report
+      tags:
+      - Reports
+  /ticket-events/import:
+    post:
+      consumes:
+      - application/json
+      description: Import ticket events in batch using worker pool
+      parameters:
+      - description: Import ticket events request
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Import ticket events
+      tags:
+      - ticket-events
+  /tickets:
+    get:
+      consumes:
+      - application/json
+      description: Get tickets with filters and pagination
+      parameters:
+      - description: Filter by ticket status
+        in: query
+        name: status
+        type: string
+      - description: Filter by priority
+        in: query
+        name: priority
+        type: string
+      - description: Filter by requestor ID
+        in: query
+        name: requestor_id
+        type: integer
+      - description: Filter by assignee ID
+        in: query
+        name: assignee_id
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get tickets successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid query parameters
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List tickets
+      tags:
+      - Tickets
+    post:
+      consumes:
+      - application/json
+      description: Create a new support ticket
+      parameters:
+      - description: Create ticket request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTicketReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ticket created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body or invalid priority
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create ticket
+      tags:
+      - Tickets
+  /tickets/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get ticket detail by ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get ticket successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid ticket ID
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ticket not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get ticket detail
+      tags:
+      - Tickets
+  /tickets/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update status of a ticket by ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update status request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateStatusReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ticket status updated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body or invalid status transition
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ticket not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update ticket status
+      tags:
+      - Tickets
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
